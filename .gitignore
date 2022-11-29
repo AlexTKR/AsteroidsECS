@@ -58,3 +58,7 @@ sysinfo.txt
 # Crashlytics generated file
 crashlytics-build.properties
 
+Asteroids/Library/
+Asteroids/Logs/
+Asteroids/UserSettings/
+Asteroids/Temp/
