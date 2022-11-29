@@ -15,7 +15,8 @@ GameObject:
   - component: {fileID: 5983217492732896571}
   - component: {fileID: 7639035924062216425}
   - component: {fileID: 936680861303080053}
-  m_Layer: 7
+  - component: {fileID: 8450974874421548808}
+  m_Layer: 8
   m_Name: Laser
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -151,6 +152,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fc7af3f2fc951f42af219f95afdca42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _laserInitialCount: 4
+--- !u!54 &8450974874421548808
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1058871744}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &2143844928623321898
 GameObject:
   m_ObjectHideFlags: 0
@@ -166,10 +184,11 @@ GameObject:
   - component: {fileID: -1127950949804979559}
   - component: {fileID: 7796032454195404325}
   - component: {fileID: 6770106975609129266}
+  - component: {fileID: 1737766875642484776}
   - component: {fileID: 1092805752486423626}
   - component: {fileID: -5996539870062308425}
   - component: {fileID: 6307622912455542796}
-  m_Layer: 6
+  m_Layer: 7
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -270,6 +289,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _boundsOffset: {x: 0, y: 0}
+--- !u!114 &1737766875642484776
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2143844928623321898}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f6fc9b443dbe8c4cb0d4275ed3d786e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!65 &1092805752486423626
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -360,7 +391,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3672105567648732673}
-  m_Layer: 6
+  m_Layer: 7
   m_Name: ShootTransform
   m_TagString: Untagged
   m_Icon: {fileID: 0}

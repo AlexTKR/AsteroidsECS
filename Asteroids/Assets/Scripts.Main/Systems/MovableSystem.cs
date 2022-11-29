@@ -23,7 +23,7 @@ namespace Scripts.Main.Systems
                     continue;
 
                 var followTargetComponent = current.GetComponent<FollowTargetComponent>();
-                var direction = followTargetComponent is { }
+                var direction = followTargetComponent is { Target: { } }
                     ? (followTargetComponent.Target.position - transformComponent.Transform.position).normalized
                     : movableComponent.Direction;
 

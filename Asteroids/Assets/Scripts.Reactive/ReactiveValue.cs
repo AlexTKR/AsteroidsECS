@@ -15,16 +15,18 @@ namespace Scripts.Reactive
     public class ReactiveValue<T> : IReactiveValue<T>
     {
         private T _value;
+        private bool _initialSet;
 
         public T Value
         {
             get => _value;
             set
             {
-                if (_value.Equals(value))
+                if (_value.Equals(value) && _initialSet)
                     return;
 
                 _value = value;
+                _initialSet = true;
                 OnChanged?.Invoke();
             }
         }

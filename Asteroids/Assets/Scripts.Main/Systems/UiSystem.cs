@@ -1,3 +1,4 @@
+using System;
 using Scripts.ECS.Components;
 using Scripts.ECS.System;
 using Scripts.ECS.World;
@@ -21,13 +22,34 @@ namespace Scripts.Main.Systems
             base.Run();
 
             var playerEntities = _world.GetEntity<PlayerComponent>();
+            var laserEntities = _world.GetEntity<LaserComponent>();
 
             for (int i = 0; i < playerEntities.Length; i++)
             {
                 var playerEntity = playerEntities[i];
-                var pos = playerEntity.GetComponent<TransformComponent>()?.Transform.position;
-                if (pos is { })
-                    _mainHubBehavior.PlayerCoordinates.Value = pos.Value;
+                var transform = playerEntity.GetComponent<TransformComponent>()?.Transform;
+                var playerComponent = playerEntity.GetComponent<PlayerComponent>();
+                if (transform is { })
+                {
+                    _mainHubBehavior.PlayerCoordinates.Value = transform.position;
+                    _mainHubBehavior.PlayerTurnAngle.Value = transform.rotation.eulerAngles.z;
+                }
+
+                _mainHubBehavior.PlayerInstantSpeed.Value = playerComponent.Acceleration;
+            }
+
+            for (int i = 0; i < laserEntities.Length; i++)
+            {
+                var laserEntity = laserEntities[i];
+                var laserComponent = laserEntity.GetComponent<LaserComponent>();
+                var delayLaserComponent = laserEntity.GetComponent<DelayLaserComponent>();
+
+                if (laserComponent is { })
+                    _mainHubBehavior.LaserCount.Value = laserComponent.LaserCount;
+
+                if (delayLaserComponent is { })
+                    _mainHubBehavior.LaserDelay.Value = (delayLaserComponent.DelayTimer - DateTime.Now.TimeOfDay).Seconds;
+
             }
         }
     }

@@ -4,6 +4,6 @@ namespace Scripts.ViewModel
 {
     public class MainCanvas  : MonoBehaviour
     {
-        public ViewModelBase _mainHudViewModel;
+        public ViewModelBase[] _ViewModels;
     }
 }

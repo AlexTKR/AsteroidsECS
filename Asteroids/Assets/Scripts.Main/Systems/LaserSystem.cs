@@ -14,24 +14,48 @@ namespace Scripts.Main.Systems
         {
             base.Run();
 
-            var shootEntity = _world.GetEntity<ShootLaserComponent>();
-            var laserEntity = _world.GetEntity<LaserComponent>()?.FirstIfAny();
-            if(laserEntity is null)
-                return;
-            
-            for (int i = 0; i < shootEntity.Length; i++)
+            var laserEntities = _world.GetEntity<LaserComponent>();
+
+            for (int i = 0; i < laserEntities.Length; i++)
             {
-                var currShootEntity = shootEntity[i];
-                var shootComponent = currShootEntity.GetComponent<ShootLaserComponent>(true);
+                var currLaserEntity = laserEntities[i];
+                var gameObjectComponent = currLaserEntity.GetComponent<GameObjectComponent>();
+                var laserComponent = currLaserEntity.GetComponent<LaserComponent>();
+                var delayLaserComponent = currLaserEntity.GetComponent<DelayLaserComponent>();
+                if (gameObjectComponent is null || laserComponent is null)
+                    continue;
+
+                if (currLaserEntity.GetComponent<ActiveLaserComponent>() is { } activeLaserComponent)
+                {
+                    if (DateTime.Now.TimeOfDay >= activeLaserComponent.ActiveTimer)
+                    {
+                        currLaserEntity.RemoveComponent<ActiveLaserComponent>();
+                        gameObjectComponent.GameObject.SetActiveOptimized(false);
+                    }
+
+                    continue;
+                }
+                
+                if (delayLaserComponent is { })
+                {
+                    if (DateTime.Now.TimeOfDay >= delayLaserComponent.DelayTimer)
+                    {
+                        currLaserEntity.RemoveComponent<DelayLaserComponent>();
+                        laserComponent.LaserCount = 4; //TODO Remove
+                    }
+                }
+                
+                var shootComponent = currLaserEntity.GetComponent<ShootLaserComponent>(true);
                 if (shootComponent is null)
                     continue;
-                
-                var gameObjectComponent = laserEntity.GetComponent<GameObjectComponent>();
-                if (gameObjectComponent is { })
-                {
-                    gameObjectComponent.GameObject.SetActiveOptimized(true);
-                    DisableLaserAfterDelay(gameObjectComponent);
-                }
+
+                if (--laserComponent.LaserCount <= 0)
+                    currLaserEntity.AddComponent(new DelayLaserComponent()
+                        { DelayTimer = DateTime.Now.TimeOfDay + TimeSpan.FromSeconds(20f) });
+
+                gameObjectComponent.GameObject.SetActiveOptimized(true);
+                currLaserEntity.AddComponent(new ActiveLaserComponent()
+                    { ActiveTimer = DateTime.Now.TimeOfDay + TimeSpan.FromSeconds(1f) });
             }
         }
 

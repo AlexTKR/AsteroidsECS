@@ -11,7 +11,8 @@ namespace Scripts.Main.Systems
         {
             PlayerMovementInputComponent playerMovementInputComponent = null;
             PlayerRotationInputComponent playerRotationInputComponent = null;
-            ShootComponent shootComponent = null;
+            ShootBulletComponent bulletComponent = null;
+            ShootLaserComponent laserComponent = null;
 
             if (Input.GetKey(KeyCode.W))
             {
@@ -30,28 +31,38 @@ namespace Scripts.Main.Systems
 
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                shootComponent = new ShootComponent() { ShootType = ShootType.Bullet };
+                bulletComponent = new ShootBulletComponent();
             }
-            
+
             if (Input.GetKeyDown(KeyCode.LeftShift))
             {
-                shootComponent = new ShootComponent() { ShootType = ShootType.Laser };
+                laserComponent = new ShootLaserComponent();
             }
 
             var playerEntities = _world.GetEntity<PlayerComponent>();
+            var laserEntities = _world.GetEntity<LaserComponent>();
 
             for (int i = 0; i < playerEntities.Length; i++)
             {
                 var playerEntity = playerEntities[i];
-                
-                if(playerMovementInputComponent is {}) 
+
+                if (playerMovementInputComponent is { })
                     playerEntity.AddComponent(playerMovementInputComponent);
-                
-                if(playerRotationInputComponent is {})
+
+                if (playerRotationInputComponent is { })
                     playerEntity.AddComponent(playerRotationInputComponent);
 
-                if (shootComponent is { })
-                    playerEntity.AddComponent(shootComponent);
+                if (bulletComponent is { })
+                    playerEntity.AddComponent(bulletComponent);
+            }
+
+
+            for (int i = 0; i < laserEntities.Length; i++)
+            {
+                var laserEntity = laserEntities[i];
+
+                if (laserComponent is { } && laserEntity.GetComponent<DelayLaserComponent>() is null)
+                    laserEntity.AddComponent(laserComponent);
             }
         }
     }

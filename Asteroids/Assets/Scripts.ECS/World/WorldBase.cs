@@ -61,14 +61,6 @@ namespace Scripts.ECS.World
             }
         }
         
-        public void AddBehavior<T>(T behavior)
-        {
-            if(behavior is IInitBehavior initBehavior) 
-                _behaviors.Add(initBehavior);
-
-            _behavioursByFunctionality[typeof(T)] = behavior;
-        }
-
         public T GetBehavior<T>()
         {
             var type = typeof(T);
@@ -84,37 +76,6 @@ namespace Scripts.ECS.World
                 return Array.Empty<T>();
 
             return components.Cast<T>().ToArray();
-        }
-
-        public void RemoveComponents(IComponent[] components)
-        {
-            var type = typeof(IComponent);
-
-            if (!_components.TryGetValue(type, out var targetComponents))
-                return;
-
-            for (int i = 0; i < components.Length; i++)
-            {
-                targetComponents.Remove(targetComponents[i]);
-            }
-        }
-
-        public void RemoveComponents<T>()
-        {
-            var type = typeof(T);
-            if (!_components.ContainsKey(type))
-                return;
-
-            _components[type] = null;
-        }
-
-        public void AddComponent(IComponent component)
-        {
-            var type = typeof(IComponent);
-            if (!_components.TryGetValue(type, out var components) | components is null)
-                _components[type] = new List<IComponent>();
-
-            _components[type].Add(component);
         }
 
         public void AddEntity(EntityBase entity)
@@ -180,6 +141,18 @@ namespace Scripts.ECS.World
         public static WorldBase InjectBehavior(this WorldBase world, object behavior)
         {
             world.AddBehavior(behavior);
+            return world;
+        }
+        
+        public static WorldBase InjectBehavior(this WorldBase world, object[] behaviors)
+        {
+
+            for (int i = 0; i < behaviors.Length; i++)
+            {
+                var behavior = behaviors[i];
+                world.AddBehavior(behavior);
+            }
+            
             return world;
         }
 

@@ -1,3 +1,4 @@
+using System;
 using Scripts.ECS.Components;
 using Scripts.ECS.Entity;
 using UnityEngine;
@@ -10,7 +11,7 @@ namespace Scripts.Main.Components
         Laser,
         Bullet
     }
-    
+
     public class DestroyComponent : IComponent
     {
     }
@@ -47,11 +48,6 @@ namespace Scripts.Main.Components
         public float Speed;
     }
 
-    public class ShootComponent : IComponent
-    {
-        public ShootType ShootType;
-    }
-
     public class BulletComponent : IComponent
     {
         
@@ -59,7 +55,7 @@ namespace Scripts.Main.Components
 
     public class LaserComponent : IComponent
     {
-        
+        public int LaserCount;
     }
 
     public class BigAsteroidComponent : IComponent
@@ -97,6 +93,16 @@ namespace Scripts.Main.Components
         
     }
 
+    public class DelayLaserComponent : IComponent
+    {
+        public TimeSpan DelayTimer;
+    }
+
+    public class ActiveLaserComponent : IComponent
+    {
+        public TimeSpan ActiveTimer;
+    }
+
     public class RecyclingComponent : IComponent
     {
         
@@ -127,6 +133,10 @@ namespace Scripts.Main.Components
     public class PlayerDamageComponent : IComponent
     {
         
+    }
+
+    public class PLayerDiedComponent : IComponent
+    {
     }
 
     public class AsteroidsDamageComponent : IComponent

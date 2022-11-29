@@ -6,7 +6,6 @@ using Scripts.Main.Controllers;
 using Scripts.Main.Systems;
 using Scripts.Main.View;
 using Scripts.ViewModel;
-using Scripts.ViewViewModelBehavior;
 using UnityEngine;
 
 namespace Scripts.Main.Composition
@@ -19,6 +18,9 @@ namespace Scripts.Main.Composition
         private SystemsBase runSystems;
         private SystemsBase physicsRunSysytems;
         private WorldBase _world;
+        private IRun _runner;
+        private IFixedRun _fixedRunner;
+        private IPauseBehaviour _pauser;
 
         private void Start()
         {
@@ -27,48 +29,59 @@ namespace Scripts.Main.Composition
 
         private void Init()
         {
+            _runner = new Runner();
+            _fixedRunner = new FixedRunner();
+            _pauser = new Pauser(new[] { (IPauseBehaviour)_runner, (IPauseBehaviour)_fixedRunner });
+
             _world = new World()
-                //.InjectBehavior((IMainHubBehavior)_mainMainCanvas._mainHudViewModel)
+                .InjectBehavior(_pauser)
+                .InjectBehavior(_mainMainCanvas._ViewModels)
+                .InjectBehavior(new GameController())
+                .InjectBehavior(new SceneController())
                 .InjectBehavior(new BundleController())
                 .InjectBehavior(new CameraController(_mainCamera))
                 .Initialize();
 
             runSystems = new RunSystems(_world)
                 .Add(new PlayerSpawnSystem().OneFrame(true))
-              //  .Add(new PlayerDamageSystem())
-             //   .Add(new AsteroidsDamageSystem())
+                .Add(new PlayerDamageSystem())
+                .Add(new AsteroidsDamageSystem())
                 .Add(new InputSystem())
                 .Add(new PlayerMovementSystem())
                 .Add(new PlayerRotationSystem())
-              //  .Add(new PlayerShootingSystem())
-              //  .Add(new BulletSpawnSystem())
-              //  .Add(new LaserSystem())
-              //  .Add(new AsteroidsSpawnSystem())
-               // .Add(new UfoSpawnSystem())
-               // .Add(new MovableSystem())
+                .Add(new BulletSpawnSystem())
+                .Add(new LaserSystem())
+                .Add(new AsteroidsSpawnSystem())
+                .Add(new UfoSpawnSystem())
+                .Add(new MovableSystem())
                 .Add(new ScreenBoundariesSystem())
-                //.Add(new RecyclingSystem())
-                //.Add(new UiSystem())
+                .Add(new RecyclingSystem())
+                .Add(new UiSystem())
+                .Add(new GameOverSystem())
                 .Initialize();
 
             physicsRunSysytems = new RunSystems(_world)
                 .Add(new CollisionSystem())
                 .Initialize();
+
+            _runner.SetAction(() => runSystems?.Run());
+            _fixedRunner.SetAction(() => physicsRunSysytems?.Run());
         }
 
         private void Update()
         {
-            runSystems?.Run();
+            _runner?.Run();
         }
 
         private void FixedUpdate()
         {
-            physicsRunSysytems?.Run();
+            _fixedRunner?.FixedRun();
         }
 
         private void OnDestroy()
         {
             runSystems?.Destroy();
+            physicsRunSysytems?.Destroy();
             _world?.Destroy();
         }
     }
