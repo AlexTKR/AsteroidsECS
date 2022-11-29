@@ -17,11 +17,13 @@ namespace Scripts.Main.Systems
                 var currentEntity = entities[i];
                 var damageComponent = currentEntity.GetComponent<AsteroidsDamageComponent>(true);
 
-                if (damageComponent.ShootType is ShootType.Laser)
-                    currentEntity.AddComponent(new RecyclingBigAsteroidComponent());
-
                 if (damageComponent.ShootType is ShootType.Bullet)
+                {
                     currentEntity.AddComponent(new SpawnSmallAsteroidComponent());
+                    continue;
+                }
+
+                currentEntity.AddComponent(new RecyclingBigAsteroidComponent());
             }
         }
     }

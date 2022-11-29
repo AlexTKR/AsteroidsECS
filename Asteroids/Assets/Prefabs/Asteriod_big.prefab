@@ -19,6 +19,7 @@ GameObject:
   - component: {fileID: 2293965576199631476}
   - component: {fileID: 7038291928650154825}
   - component: {fileID: -2206457500190694244}
+  - component: {fileID: -4667176166874191614}
   m_Layer: 6
   m_Name: Asteriod_big
   m_TagString: Untagged
@@ -101,7 +102,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1432541650856243576}
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 0.98, y: 0.95999986, z: 0.2}
@@ -206,3 +207,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _collider: {fileID: 8121473506855982998}
+--- !u!114 &-4667176166874191614
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1432541650856243576}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 375ef242891d4734c9e8fe9b6fdaeace, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _scoreForEntity: 50

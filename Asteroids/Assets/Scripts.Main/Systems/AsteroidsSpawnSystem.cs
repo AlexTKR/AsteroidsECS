@@ -11,6 +11,7 @@ using Scripts.Main.Components;
 using Scripts.Main.Controllers;
 using Scripts.Main.Entities;
 using Scripts.Main.Factories;
+using Scripts.Main.Settings;
 using Scripts.PoolsAndFactories.Pools;
 using UnityEngine;
 
@@ -63,7 +64,6 @@ namespace Scripts.Main.Systems
             Recycle<RecyclingSmallAsteroidComponent>(smallAsteroidsRecycleEntities, _smallAsteroidsPool);
         }
 
-       
 
         private void SpawnSmallASteroids()
         {
@@ -82,19 +82,23 @@ namespace Scripts.Main.Systems
 
                 var direction = movableComponent.Direction;
 
-                for (int j = 0; j < UnityEngine.Random.Range(1,4); j++) //TODO remove
+                for (int j = 0;
+                     j < UnityEngine.Random.Range(1, RuntimeSharedData.GameSettings.MaxSmallAsteroidsSpawnCount);
+                     j++)
                 {
                     var myRotation = Quaternion.Euler(direction.x, direction.y,
-                        direction.z + UnityEngine.Random.Range(-40f, 40f)); //TODO remove
+                        direction.z + UnityEngine.Random.Range(
+                            RuntimeSharedData.GameSettings.SmallAsteroidsSpawnCountDegrees.x,
+                            RuntimeSharedData.GameSettings.SmallAsteroidsSpawnCountDegrees.y)); 
                     var resDirection = myRotation * direction;
                     var smallAsteroidEntity = _smallAsteroidsPool.Get();
                     var smallAsteroidMovableComponent = smallAsteroidEntity.GetComponent<MovableComponent>();
                     var transformComponent = smallAsteroidEntity.GetComponent<TransformComponent>();
-                    if (transformComponent is { } && bigAsteroidTransformComponent is {})
+                    if (transformComponent is { } && bigAsteroidTransformComponent is { })
                         transformComponent.Transform.position = bigAsteroidTransformComponent.Transform.position;
-                    
+
                     if (smallAsteroidMovableComponent is { })
-                        smallAsteroidMovableComponent.Direction = resDirection;
+                        smallAsteroidMovableComponent.Direction = new Vector3(resDirection.x, resDirection.y, 0f);
                     smallAsteroidEntity.GetComponent<GameObjectComponent>()?.GameObject.SetActiveOptimized(true);
                     _world.AddEntity(smallAsteroidEntity);
                 }

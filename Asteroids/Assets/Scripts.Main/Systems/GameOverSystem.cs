@@ -27,6 +27,9 @@ namespace Scripts.Main.Systems
             {
                 var playerDiedEntity = playerDiedEntities[i];
                 playerDiedEntity.RemoveComponent<PLayerDiedComponent>();
+                if (playerDiedEntity.GetComponent<GameScoreComponent>() is { } gameScoreComponent)
+                    _gameOverPanelBehaviour.Score.Value = gameScoreComponent.Score;
+
                 _pauseBehaviour.Pause(true);
                 _gameOverPanelBehaviour.OnGameOver?.Invoke();
             }

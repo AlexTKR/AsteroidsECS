@@ -3,6 +3,7 @@ using Scripts.ECS.Components;
 using Scripts.ECS.Entity;
 using Scripts.ECS.System;
 using Scripts.Main.Components;
+using Scripts.Main.Settings;
 using UnityEngine;
 
 namespace Scripts.Main.Systems
@@ -28,7 +29,7 @@ namespace Scripts.Main.Systems
 
             var transform = entity.GetComponent<TransformComponent>();
             var playerTransform = transform.Transform;
-            playerTransform.Rotate(playerTransform.forward * playerRotationInputComponent.Rotation * 100f * Time.deltaTime); //TODO move to settings
+            playerTransform.Rotate(playerTransform.forward * playerRotationInputComponent.Rotation * RuntimeSharedData.GameSettings.playerRotationSpeed * Time.deltaTime); 
             entity.RemoveComponent<PlayerRotationInputComponent>();
         }
     }

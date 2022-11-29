@@ -13,6 +13,7 @@ namespace Scripts.Main.Systems
             base.Run();
 
             var triggerEntities = _world.GetEntity<TriggerComponent>();
+            int score = 0;
 
             for (int i = 0; i < triggerEntities.Length; i++)
             {
@@ -22,7 +23,7 @@ namespace Scripts.Main.Systems
                 
                 var triggerComponent = currEntity.GetComponent<TriggerComponent>(true);
 
-                if (currEntity.GetComponent<PlayerComponent>() is { })
+                if (currEntity.GetComponent<PlayerComponent>() is {})
                 {
                     currEntity.AddComponent(new PlayerDamageComponent());
                     continue;
@@ -33,35 +34,42 @@ namespace Scripts.Main.Systems
                 if (currEntity.GetComponent<BulletComponent>() is { })
                 {
                     currEntity.AddComponent(new RecyclingBulletComponent());
-                    continue;
                 }
-                
-                   
+
                 if (currEntity.GetComponent<BigAsteroidComponent>() is { })
                 {
                     var bulletComponent = triggerComponent.Other.GetComponent<BulletComponent>();
-                    var laserComponent = triggerComponent.Other.GetComponent<LaserComponent>();
                     var shootType = ShootType.Default;
 
                     if (bulletComponent is { })
                         shootType = ShootType.Bullet;
-                    if (laserComponent is { })
-                        shootType = ShootType.Laser;
-                    
+
                     currEntity.AddComponent(new AsteroidsDamageComponent() { ShootType = shootType} );
-                    continue;
                 }
 
                 if (currEntity.GetComponent<SmallAsteroidComponent>() is { })
                 {
                     currEntity.AddComponent(new RecyclingSmallAsteroidComponent());
-                    continue;
                 }
                 
                 if (currEntity.GetComponent<UfoComponent>() is { })
                 {
                     currEntity.AddComponent(new RecyclingUfoComponent());
                 }
+
+                if (currEntity.GetComponent<ScoreEntityComponent>() is { } scoreEntityComponent &&
+                    triggerComponent.Other.GetComponent<PlayerComponent>() is null)
+                {
+                    score += scoreEntityComponent.ScoreForEntity;
+                }
+            }
+
+            var gameScoreEntities = _world.GetEntity<GameScoreComponent>();
+
+            for (int i = 0; i < gameScoreEntities.Length; i++)
+            {
+                var gameScoreEntity = gameScoreEntities[i];
+                gameScoreEntity.GetComponent<GameScoreComponent>().Score += score;
             }
         }
     }

@@ -25,7 +25,7 @@ namespace Scripts.ECS.World
             new Dictionary<Type, object>();
 
         private List<EntityBase> _entities =
-            new List<EntityBase>(); //TODO Use dicitonary
+            new List<EntityBase>(); 
 
         private Dictionary<Type, List<IComponent>> _components
             = new Dictionary<Type, List<IComponent>>();
@@ -68,14 +68,6 @@ namespace Scripts.ECS.World
                 return (T)behavior;
 
             return default;
-        }
-
-        public T[] GetComponents<T>()
-        {
-            if (!_components.TryGetValue(typeof(T), out var components) | components is null)
-                return Array.Empty<T>();
-
-            return components.Cast<T>().ToArray();
         }
 
         public void AddEntity(EntityBase entity)

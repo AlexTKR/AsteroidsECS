@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Scripts.Main.Entities;
+using Scripts.Main.Settings;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -70,14 +71,20 @@ namespace Controllers
         ILoadable<UfoMonoEntity> LoadUfo();
     }
 
+    public interface ILoadGameSettings
+    {
+        ILoadable<GameSettings> LoadGameSettings();
+    }
+
     public class BundleController : ILoadPlayer, ILoadBullet,
-        ILoadAsteroids, ILoadUfo
+        ILoadAsteroids, ILoadUfo, ILoadGameSettings
     {
         private ILoadable<PlayerMonoEntity> _playerMonoEntity;
         private ILoadable<BulletMonoEntity> _bulletMonoEntity;
         private ILoadable<BigAsteroidMonoEntity> _bigAsteroidsMonoEntity;
         private ILoadable<SmallAsteroidMonoEntity> _smallAsteroidsMonoEntity;
         private ILoadable<UfoMonoEntity> _ufoMonoEntity;
+        private ILoadable<GameSettings> _loadGameSettings;
 
         public ILoadable<BigAsteroidMonoEntity> LoadBigAsteroid()
         {
@@ -102,6 +109,11 @@ namespace Controllers
         public ILoadable<UfoMonoEntity> LoadUfo()
         {
             return _ufoMonoEntity ??= new LoadReference<UfoMonoEntity, GameObject>("Ufo");
+        }
+
+        public ILoadable<GameSettings> LoadGameSettings()
+        {
+            return _loadGameSettings ??= new LoadReference<GameSettings, GameSettings>("GameSettings");
         }
     }
 }

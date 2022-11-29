@@ -3,15 +3,13 @@ using Scripts.ECS.Components;
 using Scripts.ECS.Entity;
 using Scripts.ECS.System;
 using Scripts.Main.Components;
+using Scripts.Main.Settings;
 using UnityEngine;
 
 namespace Scripts.Main.Systems
 {
     public class PlayerMovementSystem : SystemBase
     {
-        private float _movementSpeed = 4f; //TODO REMOVE
-        private float _rotationSpeed = 4f; //TODO REMOVE
-
         public override void Run()
         {
             var players = _world.GetEntity<PlayerComponent>();
@@ -40,7 +38,7 @@ namespace Scripts.Main.Systems
 
             var playerTransform = transformComponent.Transform;
             playerTransform.localPosition += playerComponent.LastAccelerationDirection * playerComponent.Acceleration * Time.deltaTime;
-            playerComponent.Acceleration = Mathf.Clamp(playerComponent.Acceleration - 0.01f, 0f, float.MaxValue); //TODO to game settings
+            playerComponent.Acceleration = Mathf.Clamp(playerComponent.Acceleration - RuntimeSharedData.GameSettings.AccelerationFadeValue, 0f, float.MaxValue); 
         }
     }
 }

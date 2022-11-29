@@ -1,41 +1,56 @@
 using ECS.Systems;
 using Scripts.ECS.System;
+using Scripts.ECS.World;
 using Scripts.Main.Components;
 using UnityEngine;
+using UnityEngine.InputSystem.Utilities;
 
 namespace Scripts.Main.Systems
 {
     public class InputSystem : SystemBase
     {
+        private PlayerInputActions _inputActions;
+        private bool shootBulletsButtonPressed;
+        private bool shootLaserButtonPressed;
+
+        public override void Init(WorldBase world)
+        {
+            base.Init(world);
+            _inputActions = new PlayerInputActions();
+            _inputActions.PlayerMap.Enable();
+            _inputActions.PlayerMap.ShootingBullets.performed += context => { shootBulletsButtonPressed = true; };
+
+            _inputActions.PlayerMap.ShootingLaser.performed += context => { shootLaserButtonPressed = true; };
+        }
+
         public override void Run()
         {
+            var movementInput = _inputActions.PlayerMap.Movement.ReadValue<Vector2>();
+
             PlayerMovementInputComponent playerMovementInputComponent = null;
             PlayerRotationInputComponent playerRotationInputComponent = null;
             ShootBulletComponent bulletComponent = null;
             ShootLaserComponent laserComponent = null;
 
-            if (Input.GetKey(KeyCode.W))
+            if (movementInput.y >= 1f)
             {
                 (playerMovementInputComponent = new PlayerMovementInputComponent()).Acceleration += 0.03f;
             }
 
-            if (Input.GetKey(KeyCode.D))
+            if (movementInput.x != 0)
             {
-                (playerRotationInputComponent ??= new PlayerRotationInputComponent()).Rotation = -1f;
+                (playerRotationInputComponent ??= new PlayerRotationInputComponent()).Rotation = movementInput.x;
             }
 
-            if (Input.GetKey(KeyCode.A))
+            if (shootBulletsButtonPressed)
             {
-                (playerRotationInputComponent ??= new PlayerRotationInputComponent()).Rotation = 1f;
-            }
-
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
+                shootBulletsButtonPressed = false;
                 bulletComponent = new ShootBulletComponent();
             }
 
-            if (Input.GetKeyDown(KeyCode.LeftShift))
+            if (shootLaserButtonPressed)
             {
+                shootLaserButtonPressed = false;
                 laserComponent = new ShootLaserComponent();
             }
 
@@ -55,7 +70,6 @@ namespace Scripts.Main.Systems
                 if (bulletComponent is { })
                     playerEntity.AddComponent(bulletComponent);
             }
-
 
             for (int i = 0; i < laserEntities.Length; i++)
             {

@@ -5,6 +5,7 @@ using Scripts.CommonExtensions;
 using Scripts.ECS.Components;
 using Scripts.ECS.System;
 using Scripts.Main.Components;
+using Scripts.Main.Settings;
 
 namespace Scripts.Main.Systems
 {
@@ -35,16 +36,16 @@ namespace Scripts.Main.Systems
 
                     continue;
                 }
-                
+
                 if (delayLaserComponent is { })
                 {
                     if (DateTime.Now.TimeOfDay >= delayLaserComponent.DelayTimer)
                     {
                         currLaserEntity.RemoveComponent<DelayLaserComponent>();
-                        laserComponent.LaserCount = 4; //TODO Remove
+                        laserComponent.LaserCount = RuntimeSharedData.GameSettings.LaserCount;
                     }
                 }
-                
+
                 var shootComponent = currLaserEntity.GetComponent<ShootLaserComponent>(true);
                 if (shootComponent is null)
                     continue;

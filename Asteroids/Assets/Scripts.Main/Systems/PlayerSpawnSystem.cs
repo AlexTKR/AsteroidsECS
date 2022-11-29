@@ -2,6 +2,7 @@ using Controllers;
 using ECS.Systems;
 using Scripts.ECS.System;
 using Scripts.ECS.World;
+using Scripts.Main.Components;
 using Scripts.Main.Entities;
 using UnityEngine;
 
@@ -14,7 +15,9 @@ namespace Scripts.Main.Systems
             base.Init(world);
             var playerPrefab = _world.GetBehavior<ILoadPlayer>().LoadPLayer().Load(runAsync: false).Result;
             var player = Object.Instantiate<PlayerMonoEntity>(playerPrefab, Vector3.zero, Quaternion.identity);
-            world.AddEntity(player.Convert(_world.GetNewEntity()));
+            var playerEntity = player.Convert(_world.GetNewEntity());
+            playerEntity.AddComponent(new GameScoreComponent());
+            world.AddEntity(playerEntity);
             world.AddEntity(player.LaserMonoEntity.Convert(_world.GetNewEntity()));
         }
     }

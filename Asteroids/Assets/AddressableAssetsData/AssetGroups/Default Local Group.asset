@@ -37,6 +37,10 @@ MonoBehaviour:
     m_Address: Bullet
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: ae3680b3d25945f42a2241ffce18c200
+    m_Address: GameSettings
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: d2e3a92b13c27e34b92ccf725cdb450a, type: 2}
   m_SchemaSet:

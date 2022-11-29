@@ -7,6 +7,8 @@ using Scripts.Main.Systems;
 using Scripts.Main.View;
 using Scripts.ViewModel;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using InputSystem = Scripts.Main.Systems.InputSystem;
 
 namespace Scripts.Main.Composition
 {
@@ -55,6 +57,7 @@ namespace Scripts.Main.Composition
                 .Add(new UfoSpawnSystem())
                 .Add(new MovableSystem())
                 .Add(new ScreenBoundariesSystem())
+                .Add(new ScoreSystem())
                 .Add(new RecyclingSystem())
                 .Add(new UiSystem())
                 .Add(new GameOverSystem())

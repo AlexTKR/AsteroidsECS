@@ -20,6 +20,16 @@ namespace Scripts.Main.Components
     {
     }
 
+    public class ScoreEntityComponent : IComponent
+    {
+        public int ScoreForEntity;
+    }
+
+    public class GameScoreComponent : IComponent
+    {
+        public int Score;
+    }
+
     public class PlayerMovementInputComponent : IComponent
     {
         public float Acceleration;
