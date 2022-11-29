@@ -1,0 +1,17 @@
+{
+    "name": "Scrripts.ViewModel",
+    "rootNamespace": "",
+    "references": [
+        "GUID:f1a011ba111d194419f9551097fc47a7",
+        "GUID:64cda729e57899e4891f867c24848f59"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
