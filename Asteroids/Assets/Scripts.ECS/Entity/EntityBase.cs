@@ -23,9 +23,8 @@ namespace Scripts.ECS.Entity
                 return default;
 
             if (remove)
-            {
                 RemoveComponent(type);
-            }
+            
 
             return (T)component;
         }

@@ -87,11 +87,4 @@ namespace Scripts.ECS.System
             return systems;
         }
     }
-
-    public class RunSystems : SystemsBase
-    {
-        public RunSystems(WorldBase world) : base(world)
-        {
-        }
-    }
 }

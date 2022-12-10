@@ -7,7 +7,6 @@ using Scripts.Main.Systems;
 using Scripts.Main.View;
 using Scripts.ViewModel;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using InputSystem = Scripts.Main.Systems.InputSystem;
 
 namespace Scripts.Main.Composition
@@ -46,7 +45,7 @@ namespace Scripts.Main.Composition
 
             runSystems = new RunSystems(_world)
                 .Add(new PlayerSpawnSystem().OneFrame(true))
-                .Add(new PlayerDamageSystem())
+                //.Add(new PlayerDamageSystem())
                 .Add(new AsteroidsDamageSystem())
                 .Add(new InputSystem())
                 .Add(new PlayerMovementSystem())
@@ -67,8 +66,8 @@ namespace Scripts.Main.Composition
                 .Add(new CollisionSystem())
                 .Initialize();
 
-            _runner.SetAction(() => runSystems?.Run());
-            _fixedRunner.SetAction(() => physicsRunSysytems?.Run());
+            _runner.SetEvent(() => runSystems?.Run());
+            _fixedRunner.SetEvent(() => physicsRunSysytems?.Run());
         }
 
         private void Update()

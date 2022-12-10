@@ -2,17 +2,17 @@ using System;
 
 namespace Scripts.Main.Composition
 {
-    public interface IRun : ISetOnActionBehaviour
+    public interface IRun : IEventSetter
     {
         void Run();
     }
 
-    public interface ISetOnActionBehaviour
+    public interface IEventSetter
     {
-        void SetAction(Action action);
+        void SetEvent(Action action);
     }
 
-    public interface IFixedRun : ISetOnActionBehaviour
+    public interface IFixedRun : IEventSetter
     {
         void FixedRun();
     }
@@ -37,7 +37,7 @@ namespace Scripts.Main.Composition
             isPaused = status;
         }
 
-        public void SetAction(Action action)
+        public void SetEvent(Action action)
         {
             _onRun += action;
         }
@@ -61,7 +61,7 @@ namespace Scripts.Main.Composition
             isPaused = status;
         }
 
-        public void SetAction(Action action)
+        public void SetEvent(Action action)
         {
             _onFixedRun = action;
         }

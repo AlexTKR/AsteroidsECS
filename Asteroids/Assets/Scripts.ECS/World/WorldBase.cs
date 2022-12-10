@@ -25,10 +25,7 @@ namespace Scripts.ECS.World
             new Dictionary<Type, object>();
 
         private List<EntityBase> _entities =
-            new List<EntityBase>(); 
-
-        private Dictionary<Type, List<IComponent>> _components
-            = new Dictionary<Type, List<IComponent>>();
+            new List<EntityBase>();
 
         private List<IInitBehavior> _behaviors =
             new List<IInitBehavior>();
@@ -70,7 +67,7 @@ namespace Scripts.ECS.World
             return default;
         }
 
-        public void AddEntity(EntityBase entity)
+        public void AddEntity(EntityBase entity) //TODO refactor
         {
             _entities.Add(entity);
         }
