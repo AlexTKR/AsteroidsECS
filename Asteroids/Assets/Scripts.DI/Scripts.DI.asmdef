@@ -1,0 +1,19 @@
+{
+    "name": "Scripts.DI",
+    "rootNamespace": "",
+    "references": [
+        "GUID:0d8beb7f090555447a6cf5ce9e54dbb4",
+        "GUID:295e7ef62a0c98d4f856390ffbce51f1",
+        "GUID:9c4b3a86bb5e795438c24db12dfe2c5d",
+        "GUID:4856768ad70e7994d977dfa2d7343d6a"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

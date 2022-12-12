@@ -1,14 +1,16 @@
-using Scripts.ECS.Components;
-using Scripts.ECS.Entity;
+using Leopotam.Ecs;
+using Scripts.Main.Components;
 
 namespace Scripts.Main.Converters
 {
     public class GameObjectConverter : MonoConverterBase
     {
-        public override EntityBase Convert(EntityBase entity)
+        public override void Convert(ref EcsEntity entity)
         {
-            return entity.AddComponent(new GameObjectComponent()
-                { GameObject = gameObject });
+            entity.Get<GameObjectComponent>() = new GameObjectComponent()
+            {
+                GameObject = gameObject
+            };
         }
     }
 }

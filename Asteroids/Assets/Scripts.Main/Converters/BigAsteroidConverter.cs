@@ -1,13 +1,13 @@
-using Scripts.ECS.Entity;
+using Leopotam.Ecs;
 using Scripts.Main.Components;
 
 namespace Scripts.Main.Converters
 {
-    public class BigAsteroidConverter : MonoConverterBase 
+    public class BigAsteroidConverter : MonoConverterBase
     {
-        public override EntityBase Convert(EntityBase entity)
+        public override void Convert(ref EcsEntity entity)
         {
-            return entity.AddComponent(new BigAsteroidComponent());
+            entity.Get<BigAsteroidComponent>() = new BigAsteroidComponent();
         }
     }
 }

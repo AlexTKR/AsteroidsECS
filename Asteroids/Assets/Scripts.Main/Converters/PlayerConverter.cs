@@ -1,4 +1,4 @@
-using Scripts.ECS.Entity;
+using Leopotam.Ecs;
 using Scripts.Main.Components;
 using UnityEngine;
 
@@ -8,9 +8,12 @@ namespace Scripts.Main.Converters
     {
         [SerializeField] private Transform _shootTransform;
 
-        public override EntityBase Convert(EntityBase entity)
+        public override void Convert(ref EcsEntity entity)
         {
-            return entity.AddComponent(new PlayerComponent() { ShootTransform = _shootTransform });
+            entity.Get<PlayerComponent>() = new PlayerComponent()
+            {
+                ShootTransform = _shootTransform
+            };
         }
     }
 }

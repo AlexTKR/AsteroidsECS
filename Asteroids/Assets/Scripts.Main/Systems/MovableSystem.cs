@@ -1,32 +1,37 @@
-using ECS.Systems;
-using Scripts.ECS.Components;
-using Scripts.ECS.System;
+using Leopotam.Ecs;
 using Scripts.Main.Components;
+using Scripts.Main.Converters;
 using UnityEngine;
 
 namespace Scripts.Main.Systems
 {
-    public class MovableSystem : SystemBase
+    public class MovableSystem : IEcsRunSystem
     {
-        public override void Run()
+        private EcsFilter<MovableComponent, TransformComponent, GameObjectComponent> _movableFilter;
+
+        public void Run()
         {
-            base.Run();
-
-            var movableEntities = _world.GetEntity<MovableComponent>();
-
-            for (int i = 0; i < movableEntities.Length; i++)
+            foreach (var i in _movableFilter)
             {
-                var current = movableEntities[i];
-                var movableComponent = current.GetComponent<MovableComponent>();
-                var transformComponent = current.GetComponent<TransformComponent>();
-                if (transformComponent is null)
+                ref var entity = ref _movableFilter.GetEntity(i);
+                ref var movableComponent = ref _movableFilter.Get1(i);
+                ref var transformComponent = ref _movableFilter.Get2(i);
+                ref var gameObjectComponent = ref _movableFilter.Get3(i);
+                
+                if (!gameObjectComponent.GameObject.activeSelf)
                     continue;
 
-                var followTargetComponent = current.GetComponent<FollowTargetComponent>();
-                var direction = followTargetComponent is { Target: { } }
-                    ? (followTargetComponent.Target.position - transformComponent.Transform.position).normalized
-                    : movableComponent.Direction;
-
+                Vector3 direction = default;
+                if (entity.Has<FollowTargetComponent>())
+                {
+                    ref var followTargetComponent = ref entity.Get<FollowTargetComponent>();
+                    direction = followTargetComponent.Target.position - transformComponent.Transform.position;
+                }
+                else
+                {
+                    direction = movableComponent.Direction;
+                }
+                
                 transformComponent.Transform.localPosition += direction * movableComponent.Speed * Time.deltaTime;
             }
         }

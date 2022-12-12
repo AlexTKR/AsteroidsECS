@@ -1,10 +1,10 @@
-using Scripts.ECS.World;
+using Scripts.CommonBehaviours;
 
 namespace Scripts.Main.Controllers
 {
-    public abstract class ControllersBase : IInitBehavior
+    public abstract class ControllersBase : IInit
     {
-        public virtual void Init(IGetControllers getControllers)
+        public virtual void Init()
         {
             
         }

@@ -18,7 +18,6 @@ GameObject:
   - component: {fileID: -387906877846614388}
   - component: {fileID: -6792517320384725086}
   - component: {fileID: 3439759230357597426}
-  - component: {fileID: 8009340593195064622}
   - component: {fileID: -4415564810601617686}
   m_Layer: 6
   m_Name: Asteriod_small
@@ -181,6 +180,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e003e434c4202534ebb78c15c1fa2cdb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _collider: {fileID: 4003694790483980836}
 --- !u!114 &3439759230357597426
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -194,19 +194,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _speed: 0.2
---- !u!114 &8009340593195064622
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 183067779069592493}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea1224edc8aaba04389147a020af02ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _collider: {fileID: 4003694790483980836}
 --- !u!114 &-4415564810601617686
 MonoBehaviour:
   m_ObjectHideFlags: 0
