@@ -1,4 +1,4 @@
-using Scripts.ECS.Entity;
+using Leopotam.Ecs;
 using Scripts.Main.Components;
 using UnityEngine;
 
@@ -8,9 +8,20 @@ namespace Scripts.Main.Converters
     {
         [SerializeField] private float _speed;
 
-        public override EntityBase Convert(EntityBase entity)
+        public override void Convert(ref EcsEntity entity)
         {
-            return entity.AddComponent(new MovableComponent() { Speed = _speed });
+            if (entity.Has<MovableComponent>())
+            {
+                ref var movableComponent  = ref entity.Get<MovableComponent>();
+                movableComponent.Speed = _speed;
+                return;
+            }
+
+            entity.Get<MovableComponent>() = new MovableComponent()
+            {
+                Speed = _speed,
+                Direction = gameObject.transform.up
+            };
         }
     }
 }

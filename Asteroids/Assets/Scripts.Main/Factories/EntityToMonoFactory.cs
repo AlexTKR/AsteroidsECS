@@ -1,28 +1,30 @@
-using Scripts.ECS.Entity;
-using Scripts.ECS.World;
+using Leopotam.Ecs;
+using Scripts.CommonExtensions;
+using Scripts.Main.Components;
 using Scripts.Main.Converters;
-using Scripts.PoolsAndFactories.Factories;
 using UnityEngine;
 
 namespace Scripts.Main.Factories
 {
-    public class EntityToMonoFactory<T> : IFactory<EntityBase>  where T : EntityToMono
+    public class EntityToMonoFactory : IFactory<EcsEntity, SpawnComponent>
     {
-        private readonly T _entityPrefab;
-        private WorldBase _world;
-        private GameObject _objectsHolder; 
-            
-        public EntityToMonoFactory(T entityPrefab, WorldBase world, string holderName)
+        private EcsWorld _world;
+
+        public EntityToMonoFactory(EcsWorld world)
         {
-            _objectsHolder = new GameObject(holderName);
-            _entityPrefab = entityPrefab;
             _world = world;
         }
-            
-        public EntityBase Get()
+
+        public void Get(ref EcsEntity entity , ref SpawnComponent inData)
         {
-            var monoEntity = Object.Instantiate<T>(_entityPrefab, _objectsHolder.transform);
-            return monoEntity.Convert(_world.GetNewEntity());
+            var spawnObject = Object.Instantiate(inData.Prefab, inData.Position, inData.Rotation, inData.Parent);
+
+            var entityToMono = spawnObject.GetComponent<EntityToMono>();
+
+            if (entityToMono is { })
+                entityToMono.Convert(ref entity);
+
+            spawnObject.SetActiveOptimized(inData.IsActive);
         }
     }
 }

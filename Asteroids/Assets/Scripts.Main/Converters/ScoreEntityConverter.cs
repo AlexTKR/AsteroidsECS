@@ -1,4 +1,4 @@
-using Scripts.ECS.Entity;
+using Leopotam.Ecs;
 using Scripts.Main.Components;
 using UnityEngine;
 
@@ -8,9 +8,12 @@ namespace Scripts.Main.Converters
     {
         [SerializeField] private int _scoreForEntity;
 
-        public override EntityBase Convert(EntityBase entity)
+        public override void Convert(ref EcsEntity entity)
         {
-            return entity.AddComponent(new ScoreEntityComponent() { ScoreForEntity = _scoreForEntity });
+            entity.Get<ScoreEntityComponent>() = new ScoreEntityComponent()
+            {
+                ScoreForEntity = _scoreForEntity
+            };
         }
     }
 }

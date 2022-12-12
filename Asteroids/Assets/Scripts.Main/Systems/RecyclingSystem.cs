@@ -1,48 +1,64 @@
-using Scripts.ECS.System;
+using Leopotam.Ecs;
+using Scripts.CommonExtensions;
 using Scripts.Main.Components;
+using Scripts.Main.Pools;
 using UnityEngine;
 
-namespace ECS.Systems
+namespace Scripts.Main.Systems
 {
-    public class RecyclingSystem : SystemBase
+    public class RecyclingSystem : IEcsRunSystem
     {
-        public override void Run()
+        private EcsFilter<RecyclingComponent, GameObjectComponent> _recyclingFilter;
+
+        private IEntityPool<EcsEntity, BigAsteroidComponent> _bigAsteroidsEntityPool;
+        private IEntityPool<EcsEntity, SmallAsteroidComponent> _smallAsteroidsEntityPool;
+        private IEntityPool<EcsEntity, BulletComponent> _bulletEntityPool;
+        private IEntityPool<EcsEntity, UfoComponent> _ufoEntityPool;
+
+        public void Run()
         {
-            base.Run();
-
-            var recyclingEntity = _world.GetEntity<RecyclingComponent>();
-
-            for (int i = 0; i < recyclingEntity.Length; i++)
+            foreach (var i in _recyclingFilter)
             {
-                var entity = recyclingEntity[i];
+                ref var recyclingEntity = ref _recyclingFilter.GetEntity(i);
+                ref var gameObjectComponent = ref _recyclingFilter.Get2(i);
+                gameObjectComponent.GameObject.SetActiveOptimized(false);
 
-                if (entity.GetComponent<BulletComponent>() is { })
+                if (recyclingEntity.Has<BulletComponent>())
                 {
-                    entity.RemoveComponent<RecyclingComponent>();
-                    entity.AddComponent(new RecyclingBulletComponent());
+                    _bulletEntityPool.Return(ref recyclingEntity);
+                    recyclingEntity.Del<RecyclingComponent>();
+                    continue;
+                }
+
+                if (recyclingEntity.Has<BigAsteroidComponent>())
+                {
+                    _bigAsteroidsEntityPool.Return(ref recyclingEntity);
+                    recyclingEntity.Del<RecyclingComponent>();
+                    continue;
+                }
+
+                if (recyclingEntity.Has<SmallAsteroidComponent>())
+                {
+                    _smallAsteroidsEntityPool.Return(ref recyclingEntity);
+                    recyclingEntity.Del<RecyclingComponent>();
                     continue;
                 }
                 
-                if (entity.GetComponent<BigAsteroidComponent>() is { })
+                if (recyclingEntity.Has<UfoComponent>())
                 {
-                    entity.RemoveComponent<RecyclingComponent>();
-                    entity.AddComponent(new RecyclingBigAsteroidComponent());
+                    _ufoEntityPool.Return(ref recyclingEntity);
+                    recyclingEntity.Del<RecyclingComponent>();
                     continue;
-                }
-                
-                if (entity.GetComponent<SmallAsteroidComponent>() is { })
-                {
-                    entity.RemoveComponent<RecyclingComponent>();
-                    entity.AddComponent(new RecyclingSmallAsteroidComponent());
-                    continue;
-                }
-                
-                if (entity.GetComponent<UfoComponent>() is { })
-                {
-                    entity.RemoveComponent<RecyclingComponent>();
-                    entity.AddComponent(new RecyclingUfoComponent());
                 }
             }
+            
+            //
+            // if (entity.GetComponent<UfoComponent>() is { })
+            // {
+            //     entity.RemoveComponent<RecyclingComponent>();
+            //     entity.AddComponent(new RecyclingUfoComponent());
+            // }
+
         }
     }
 }

@@ -1,102 +1,76 @@
 using System;
-using System.Threading.Tasks;
 using Controllers;
-using ECS.Systems;
-using Scripts.CommonExtensions;
-using Scripts.ECS.Components;
-using Scripts.ECS.Entity;
-using Scripts.ECS.Pools;
-using Scripts.ECS.System;
-using Scripts.ECS.World;
+using Leopotam.Ecs;
 using Scripts.Main.Components;
-using Scripts.Main.Controllers;
-using Scripts.Main.Entities;
-using Scripts.Main.Factories;
-using Scripts.PoolsAndFactories.Pools;
+using Scripts.Main.Pools;
 using UnityEngine;
 
 namespace Scripts.Main.Systems
 {
-    public class UfoSpawnSystem : SystemBase
+    public class UfoSpawnSystem  : IEcsInitSystem , IEcsRunSystem
     {
-        private bool delayActive;
-        private IPool<EntityBase> _ufoPool;
-        private Vector2 _screenBounds;
-
-        public override void Init(WorldBase world)
+        private EcsWorld _ecsWorld;
+        private EcsFilter<UfoSpawnDelayComponent> _spawnDelayFilter;
+        private EcsFilter<PlayerComponent, TransformComponent> _playerFilter;
+        private IEntityPool<EcsEntity, UfoComponent> _ufoEntityPool;
+        private ILoadUfo _loadUfo;
+        private GameObject _ufoMonoEntityPrefab;
+        private Transform _parent;
+        
+        public void Init()
         {
-            base.Init(world);
-            _screenBounds = _world.GetBehavior<IGetScreenBounds>().ScreenBounds;
-            var loadUfo = _world.GetBehavior<ILoadUfo>();
-            var ufoMonoEntityPrefab = loadUfo.LoadUfo().Load(runAsync: false).Result;
-            _ufoPool = new SimpleEntityPool<EntityBase>(
-                new EntityToMonoFactory<UfoMonoEntity>(ufoMonoEntityPrefab, _world, "UfoHolder"));
+            _parent = new GameObject("UfoHolder").transform;
+            _ufoMonoEntityPrefab = _loadUfo.LoadUfo().Load(runAsync: false).Result.gameObject;
+            SetDelay();
         }
 
-        public override void Run()
+        public void Run()
         {
-            base.Run();
-            Recycle<RecyclingUfoComponent>(_world.GetEntity<RecyclingUfoComponent>(), _ufoPool);
-            SpawnUfo();
-        }
+           ref  var playerTransformComponent = ref _playerFilter.Get2(0);
+            
+            if (_spawnDelayFilter.IsEmpty())
+            {
+                if (_ufoEntityPool.EntityCount > 0)
+                {
+                    ref var pooledEntity = ref _ufoEntityPool.Get();
+                    pooledEntity.Get<EntityScreenPlacementComponent>();
+                }
+                else
+                {
+                    var spawnEntity = _ecsWorld.NewEntity();
+                    spawnEntity.Get<FollowTargetComponent>() = new FollowTargetComponent()
+                    {
+                        Target = playerTransformComponent.Transform
+                    };
+                    spawnEntity.Get<SpawnComponent>() = new SpawnComponent()
+                    {
+                        Prefab = _ufoMonoEntityPrefab,
+                        Position = Vector3.zero,
+                        Rotation = Quaternion.identity,
+                        Parent = _parent
+                    };
+                    spawnEntity.Get<EntityScreenPlacementComponent>();
+                }
 
-        private void SpawnUfo()
-        {
-            if (delayActive)
+                SetDelay();
                 return;
-
-            var ufoEntity = _ufoPool.Get();
-            var spawnSide = ExtensionsAndHelpers.GetOneRandom((Sides[])Enum.GetValues(typeof(Sides)));
-            GetBoundsData(ufoEntity, out var objectHalfSize);
-            var transformComponent = ufoEntity.GetComponent<TransformComponent>();
-            var gameObjectComponent = ufoEntity.GetComponent<GameObjectComponent>();
-            var followTargetComponent = ufoEntity.GetComponent<FollowTargetComponent>();
-            var playerTransform = _world.GetEntity<PlayerComponent>().FirstIfAny()?.GetComponent<TransformComponent>();
-            var spawnPosition = spawnSide switch
-            {
-                Sides.TopSide => new Vector3(
-                    UnityEngine.Random.Range(-_screenBounds.x - objectHalfSize.x, _screenBounds.x + objectHalfSize.x),
-                    _screenBounds.y + objectHalfSize.y, 0f),
-                Sides.BottomSide => new Vector3(
-                    UnityEngine.Random.Range(-_screenBounds.x - objectHalfSize.x, _screenBounds.x + objectHalfSize.x),
-                    -_screenBounds.y - objectHalfSize.y, 0f),
-                Sides.LeftSide => new Vector3(-_screenBounds.x - objectHalfSize.x,
-                    UnityEngine.Random.Range(-_screenBounds.y - objectHalfSize.y, _screenBounds.y + objectHalfSize.y)
-                    - _screenBounds.y - objectHalfSize.y, 0f),
-                Sides.RightSide => new Vector3(_screenBounds.x + objectHalfSize.x,
-                    UnityEngine.Random.Range(-_screenBounds.y - objectHalfSize.y, _screenBounds.y + objectHalfSize.y)
-                    - _screenBounds.y - objectHalfSize.y, 0f),
-                _ => new Vector3()
-            };
-
-            if (transformComponent is { })
-                transformComponent.Transform.position = spawnPosition;
-
-            if (gameObjectComponent is { })
-                gameObjectComponent.GameObject.SetActiveOptimized(true);
-
-            if (followTargetComponent is { } && playerTransform is { })
-            {
-                followTargetComponent.Target = playerTransform.Transform;
             }
 
-            _world.AddEntity(ufoEntity);
-            ProcessDelay();
-        }
+            ref var delayEntity = ref _spawnDelayFilter.GetEntity(0);
+            ref var spawnDelayComponent = ref _spawnDelayFilter.Get1(0);
 
-        private void GetBoundsData(EntityBase entity,
-            out Vector2 objectHalfSize)
-        {
-            var spriteRendererComponent = entity.GetComponent<SpriteRendererComponent>();
-            var boundsSize = spriteRendererComponent.SpriteRenderer.bounds.size;
-            objectHalfSize = new Vector2(boundsSize.x / 2, boundsSize.y / 2);
+            if (DateTime.Now.TimeOfDay >= spawnDelayComponent.Delay)
+            {
+                delayEntity.Del<UfoSpawnDelayComponent>();
+            }
         }
-
-        private async void ProcessDelay()
+        
+        private void SetDelay()
         {
-            delayActive = true;
-            await Task.Delay(TimeSpan.FromSeconds(4f));
-            delayActive = false;
+            _ecsWorld.NewEntity().Get<UfoSpawnDelayComponent>() = new UfoSpawnDelayComponent()
+            {
+                Delay = DateTime.Now.TimeOfDay.Add(TimeSpan.FromSeconds(4f)) //TODO MOVE to game sett
+            };
         }
     }
 }

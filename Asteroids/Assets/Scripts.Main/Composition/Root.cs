@@ -1,28 +1,43 @@
 using Controllers;
-using ECS.Systems;
-using Scripts.ECS.System;
-using Scripts.ECS.World;
+using Leopotam.Ecs;
+using Scripts.CommonBehaviours;
+using Scripts.Main.Components;
 using Scripts.Main.Controllers;
+using Scripts.Main.Pools;
 using Scripts.Main.Systems;
-using Scripts.Main.View;
-using Scripts.ViewModel;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using InputSystem = Scripts.Main.Systems.InputSystem;
+using Zenject;
 
 namespace Scripts.Main.Composition
 {
     public class Root : MonoBehaviour
     {
-        [SerializeField] private MainCamera _mainCamera;
-        [SerializeField] private MainCanvas _mainMainCanvas;
+        private EcsSystems _runSystems;
+        private EcsSystems _physicsRunSystems;
+        private EcsWorld _world;
+        private IInitiator _initiator;
+        private IEntityPool<EcsEntity, BigAsteroidComponent> _bigAsteroidsEntityPool;
+        private IEntityPool<EcsEntity, SmallAsteroidComponent> _smallAsteroidsEntityPool;
+        private IEntityPool<EcsEntity, BulletComponent> _bulletEntityPool;
+        private IEntityPool<EcsEntity, UfoComponent> _ufoEntityPool;
 
-        private SystemsBase runSystems;
-        private SystemsBase physicsRunSysytems;
-        private WorldBase _world;
-        private IRun _runner;
-        private IFixedRun _fixedRunner;
-        private IPauseBehaviour _pauser;
+        #region Behaviours
+
+        private ILoadPlayer _loadPlayer;
+        private ILoadBullet _loadBullet;
+        private IGetScreenBounds _getScreenBounds;
+
+        #endregion
+
+        [Inject]
+        private void Construct(IInitiator initiator, ILoadPlayer loadPlayer,
+            IGetScreenBounds getScreenBounds, ILoadBullet loadBullet)
+        {
+            _initiator = initiator;
+            _loadPlayer = loadPlayer;
+            _getScreenBounds = getScreenBounds;
+            _loadBullet = loadBullet;
+        }
 
         private void Start()
         {
@@ -31,61 +46,59 @@ namespace Scripts.Main.Composition
 
         private void Init()
         {
-            _runner = new Runner();
-            _fixedRunner = new FixedRunner();
-            _pauser = new Pauser(new[] { (IPauseBehaviour)_runner, (IPauseBehaviour)_fixedRunner });
+            _bigAsteroidsEntityPool = new SimpleEntityPool<EcsEntity, BigAsteroidComponent>();
+            _smallAsteroidsEntityPool = new SimpleEntityPool<EcsEntity, SmallAsteroidComponent>();
+            _bulletEntityPool = new SimpleEntityPool<EcsEntity, BulletComponent>();
+            _ufoEntityPool = new SimpleEntityPool<EcsEntity, UfoComponent>();
+            _initiator.PreInit();
+            _initiator.Init();
 
-            _world = new World()
-                .InjectBehavior(_pauser)
-                .InjectBehavior(_mainMainCanvas._ViewModels)
-                .InjectBehavior(new GameController())
-                .InjectBehavior(new SceneController())
-                .InjectBehavior(new BundleController())
-                .InjectBehavior(new CameraController(_mainCamera))
-                .Initialize();
+            _world = new EcsWorld();
+            _runSystems = new EcsSystems(_world);
+            _physicsRunSystems = new EcsSystems(_world);
 
-            runSystems = new RunSystems(_world)
-                .Add(new PlayerSpawnSystem().OneFrame(true))
-                .Add(new PlayerDamageSystem())
-                .Add(new AsteroidsDamageSystem())
+            _runSystems.Inject(_loadPlayer)
+                .Inject(_loadBullet)
+                .Inject(_bigAsteroidsEntityPool)
+                .Inject(_smallAsteroidsEntityPool)
+                .Inject(_bulletEntityPool)
+                .Inject(_ufoEntityPool)
+                .Inject(_getScreenBounds)
+                .Add(new PlayerInitSystem())
                 .Add(new InputSystem())
-                .Add(new PlayerMovementSystem())
-                .Add(new PlayerRotationSystem())
-                .Add(new BulletSpawnSystem())
-                .Add(new LaserSystem())
-                .Add(new AsteroidsSpawnSystem())
+                .Add(new BigAsteroidsSpawnSystem())
+                .Add(new SmallAsteroidsSpawnSystem())
                 .Add(new UfoSpawnSystem())
+                .Add(new BulletSystem())
+                .Add(new SpawnSystem())
+                .Add(new EntityScreenPlacementSystem())
+                .Add(new MovementWithInertiaSystem())
+                .Add(new RotationSystem())
                 .Add(new MovableSystem())
                 .Add(new ScreenBoundariesSystem())
-                .Add(new ScoreSystem())
                 .Add(new RecyclingSystem())
-                .Add(new UiSystem())
-                .Add(new GameOverSystem())
-                .Initialize();
+                .Init();
 
-            physicsRunSysytems = new RunSystems(_world)
+            _physicsRunSystems
                 .Add(new CollisionSystem())
-                .Initialize();
-
-            _runner.SetAction(() => runSystems?.Run());
-            _fixedRunner.SetAction(() => physicsRunSysytems?.Run());
+                .Init();
         }
 
         private void Update()
         {
-            _runner?.Run();
+            _runSystems?.Run();
         }
 
         private void FixedUpdate()
         {
-            _fixedRunner?.FixedRun();
+            _physicsRunSystems?.Run();
         }
 
         private void OnDestroy()
         {
-            runSystems?.Destroy();
-            physicsRunSysytems?.Destroy();
             _world?.Destroy();
+            _runSystems?.Destroy();
+            _physicsRunSystems?.Destroy();
         }
     }
 }

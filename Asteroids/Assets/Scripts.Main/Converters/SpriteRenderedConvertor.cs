@@ -1,5 +1,5 @@
-using Scripts.ECS.Components;
-using Scripts.ECS.Entity;
+using Leopotam.Ecs;
+using Scripts.Main.Components;
 using UnityEngine;
 
 namespace Scripts.Main.Converters
@@ -8,10 +8,12 @@ namespace Scripts.Main.Converters
     {
         [SerializeField] private SpriteRenderer _spriteRenderer;
 
-        public override EntityBase Convert(EntityBase entity)
+        public override void Convert(ref EcsEntity entity)
         {
-            entity.AddComponent(new SpriteRendererComponent() { SpriteRenderer = _spriteRenderer });
-            return entity;
+            entity.Get<SpriteRendererComponent>() = new SpriteRendererComponent()
+            {
+                SpriteRenderer = _spriteRenderer
+            };
         }
     }
 }

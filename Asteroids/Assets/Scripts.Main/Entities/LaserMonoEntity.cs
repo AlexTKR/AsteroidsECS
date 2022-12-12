@@ -1,3 +1,4 @@
+using Leopotam.Ecs;
 using Scripts.Main.Components;
 using Scripts.Main.Converters;
 using UnityEngine;
@@ -8,8 +9,14 @@ namespace Scripts.Main.Entities
     {
         protected override void OnTriggerEnter(Collider other)
         {
-            if (other.TryGetComponent<PhysicsAffectedEntityToMono>(out var otherEntity))
-                otherEntity.Entity.AddComponent(new TriggerComponent() { Other = Entity });
+            if (other.TryGetComponent<PhysicsAffectedEntityToMono>(out var physicsAffectedEntityToMono))
+            {
+                ref var otherEntity = ref physicsAffectedEntityToMono.Entity;
+                otherEntity.Get<TriggerComponent>() = new TriggerComponent()
+                {
+                    Collider = _collider
+                };
+            }
         }
     }
 }

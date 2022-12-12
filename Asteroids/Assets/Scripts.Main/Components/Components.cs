@@ -1,156 +1,159 @@
 using System;
-using Scripts.ECS.Components;
-using Scripts.ECS.Entity;
 using UnityEngine;
 
 namespace Scripts.Main.Components
 {
-    public enum ShootType
+    public struct SpawnComponent
     {
-        Default,
-        Laser,
-        Bullet
+        public GameObject Prefab;
+        public Vector3 Position;
+        public Quaternion Rotation;
+        public Transform Parent;
+        public bool IsActive;
     }
 
-    public class DestroyComponent : IComponent
+    public struct SpriteRendererComponent
+    {
+        public SpriteRenderer SpriteRenderer;
+    }
+
+    public struct TransformComponent
+    {
+        public Transform Transform;
+    }
+
+    public struct GameObjectComponent
+    {
+        public GameObject GameObject;
+    }
+
+    public struct TriggerComponent
+    {
+        public Collider Collider;
+    }
+
+    public struct DamageComponent
     {
     }
 
-    public class DamageComponent : IComponent
-    {
-    }
-
-    public class ScoreEntityComponent : IComponent
+    public struct ScoreEntityComponent
     {
         public int ScoreForEntity;
     }
 
-    public class GameScoreComponent : IComponent
+    public struct GameScoreComponent
     {
         public int Score;
     }
 
-    public class PlayerMovementInputComponent : IComponent
+    public struct AccelerationComponent
     {
         public float Acceleration;
     }
 
-    public class PlayerRotationInputComponent : IComponent
+    public struct RotationComponent
     {
         public float Rotation;
     }
 
-    public class PlayerComponent : IComponent
+    public struct RotationSpeedComponent
     {
-        public Transform ShootTransform;
-        public float Acceleration;
-        public Vector3 LastAccelerationDirection;
+        public float RotationSpeed;
     }
 
-    public class AffectedByBoundariesComponent : IComponent
+    public struct PlayerComponent
+    {
+        public Transform ShootTransform;
+    }
+
+    public struct AffectedByBoundariesComponent
     {
         public Vector2 BoundsOffset;
     }
 
-    public class MovableComponent : IComponent
+    public struct MovableComponent
     {
         public Vector3 Direction;
         public float Speed;
     }
 
-    public class BulletComponent : IComponent
+    public struct MovableWithInertiaComponent
     {
-        
+        public float InstantSpeed;
+        public float SpeedDecreaseValue;
+        public float CurrentSpeed;
+        public Vector3 LastAccelerationDirection;
     }
 
-    public class LaserComponent : IComponent
+    public struct BulletComponent
+    {
+    }
+
+    public struct LaserComponent
     {
         public int LaserCount;
     }
 
-    public class BigAsteroidComponent : IComponent
+    public struct BigAsteroidComponent
     {
-        
     }
 
-    public class SmallAsteroidComponent : IComponent
+    public struct SmallAsteroidComponent
     {
-        
     }
 
-    public class SpawnSmallAsteroidComponent : IComponent
+    public struct SpawnSmallAsteroidComponent
     {
-        
     }
 
-    public class UfoComponent : IComponent
+    public struct UfoComponent
     {
-       
     }
 
-    public class FollowTargetComponent : IComponent
+    public struct FollowTargetComponent
     {
         public Transform Target;
     }
 
-    public class ShootBulletComponent : IComponent
+    public struct ShootBulletComponent
     {
-        
     }
 
-    public class ShootLaserComponent : IComponent
+    public struct ShootLaserComponent
     {
-        
     }
 
-    public class DelayLaserComponent : IComponent
+    public struct DelayLaserComponent
     {
         public TimeSpan DelayTimer;
     }
 
-    public class ActiveLaserComponent : IComponent
+    public struct ActiveLaserComponent
     {
         public TimeSpan ActiveTimer;
     }
 
-    public class RecyclingComponent : IComponent
+    public struct RecyclingComponent
     {
         
     }
+    
+    public struct DiedComponent
+    {
+    }
+    
+    public struct AsteroidsSpawnDelayComponent
+    {
+        public TimeSpan Delay;
+    }
+    
+    public struct UfoSpawnDelayComponent
+    {
+        public TimeSpan Delay;
+    }
 
-    public class RecyclingBulletComponent : IComponent
-    {
-    }
-    
-    public class RecyclingBigAsteroidComponent : IComponent
-    {
-    }
-    
-    public class RecyclingSmallAsteroidComponent : IComponent
-    {
-    }
-    
-    public class RecyclingUfoComponent : IComponent
+    public struct EntityScreenPlacementComponent
     {
         
-    }
-
-    public class TriggerComponent : IComponent
-    {
-        public EntityBase Other;
-    }
-
-    public class PlayerDamageComponent : IComponent
-    {
-        
-    }
-
-    public class PLayerDiedComponent : IComponent
-    {
-    }
-
-    public class AsteroidsDamageComponent : IComponent
-    {
-        public ShootType ShootType;
     }
 }

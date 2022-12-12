@@ -1,76 +1,61 @@
-using ECS.Systems;
+using Leopotam.Ecs;
 using Scripts.CommonExtensions;
-using Scripts.ECS.Components;
-using Scripts.ECS.System;
 using Scripts.Main.Components;
+using Scripts.Main.Converters;
 
 namespace Scripts.Main.Systems
 {
-    public class CollisionSystem : SystemBase
+    public class CollisionSystem : IEcsRunSystem
     {
-        public override void Run()
-        {
-            base.Run();
+        private EcsFilter<TriggerComponent, GameObjectComponent> _triggerFilter;
+        private EcsWorld _ecsWorld;
 
-            var triggerEntities = _world.GetEntity<TriggerComponent>();
+        public void Run()
+        {
+            var scoreEntity = _ecsWorld.NewEntity().Get<GameScoreComponent>();
             int score = 0;
 
-            for (int i = 0; i < triggerEntities.Length; i++)
+            foreach (var i in _triggerFilter)
             {
-                var currEntity = triggerEntities[i];
-                if(currEntity.GetComponent<LaserComponent>() is {})
+                ref var triggerEntity = ref _triggerFilter.GetEntity(i);
+                ref var triggerComponent = ref _triggerFilter.Get1(i);
+                var other = triggerComponent.Collider;
+                triggerEntity.Del<TriggerComponent>();
+
+                if (triggerEntity.Has<LaserComponent>())
                     continue;
-                
-                var triggerComponent = currEntity.GetComponent<TriggerComponent>(true);
 
-                if (currEntity.GetComponent<PlayerComponent>() is {})
+                if (triggerEntity.Has<PlayerComponent>())
                 {
-                    currEntity.AddComponent(new PlayerDamageComponent());
+                    triggerEntity.Get<DamageComponent>();
                     continue;
                 }
-                
-                currEntity.GetComponent<GameObjectComponent>()?.GameObject.SetActiveOptimized(false);
 
-                if (currEntity.GetComponent<BulletComponent>() is { })
+                ref var gameObjectComponent = ref _triggerFilter.Get2(i);
+                gameObjectComponent.GameObject.SetActiveOptimized(false);
+
+                if (triggerEntity.Has<BigAsteroidComponent>())
                 {
-                    currEntity.AddComponent(new RecyclingBulletComponent());
+                    var physicsAffectedEntityToMono =
+                        other.GetComponent<PhysicsAffectedEntityToMono>();
+                    ref var otherEntity = ref physicsAffectedEntityToMono.Entity;
+
+                    if (otherEntity.Has<BulletComponent>())
+                    {
+                        triggerEntity.Get<DamageComponent>();
+                    }
                 }
 
-                if (currEntity.GetComponent<BigAsteroidComponent>() is { })
-                {
-                    var bulletComponent = triggerComponent.Other.GetComponent<BulletComponent>();
-                    var shootType = ShootType.Default;
+                triggerEntity.Get<RecyclingComponent>();
 
-                    if (bulletComponent is { })
-                        shootType = ShootType.Bullet;
+                if (!triggerEntity.Has<ScoreEntityComponent>())
+                    continue;
 
-                    currEntity.AddComponent(new AsteroidsDamageComponent() { ShootType = shootType} );
-                }
-
-                if (currEntity.GetComponent<SmallAsteroidComponent>() is { })
-                {
-                    currEntity.AddComponent(new RecyclingSmallAsteroidComponent());
-                }
-                
-                if (currEntity.GetComponent<UfoComponent>() is { })
-                {
-                    currEntity.AddComponent(new RecyclingUfoComponent());
-                }
-
-                if (currEntity.GetComponent<ScoreEntityComponent>() is { } scoreEntityComponent &&
-                    triggerComponent.Other.GetComponent<PlayerComponent>() is null)
-                {
-                    score += scoreEntityComponent.ScoreForEntity;
-                }
+                ref var scoreEntityComponent = ref triggerEntity.Get<ScoreEntityComponent>();
+                score += scoreEntityComponent.ScoreForEntity;
             }
 
-            var gameScoreEntities = _world.GetEntity<GameScoreComponent>();
-
-            for (int i = 0; i < gameScoreEntities.Length; i++)
-            {
-                var gameScoreEntity = gameScoreEntities[i];
-                gameScoreEntity.GetComponent<GameScoreComponent>().Score += score;
-            }
+            scoreEntity.Score = score;
         }
     }
 }

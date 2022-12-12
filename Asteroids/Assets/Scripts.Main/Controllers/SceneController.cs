@@ -1,5 +1,3 @@
-using Scripts.ECS.World;
-using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace Scripts.Main.Controllers
@@ -11,11 +9,6 @@ namespace Scripts.Main.Controllers
 
     public class SceneController : ControllersBase ,ILoadScene
     {
-        public override void Init(IGetControllers getControllers)
-        {
-                
-        }
-        
         public void LoadScene(int targetIndex)
         {
             var currentScene = SceneManager.GetActiveScene().buildIndex;

@@ -1,80 +1,82 @@
+using Leopotam.Ecs;
 using Scripts.CommonExtensions;
-using Scripts.ECS.Components;
-using Scripts.ECS.Entity;
-using Scripts.ECS.System;
-using Scripts.ECS.World;
 using Scripts.Main.Components;
 using Scripts.Main.Controllers;
 using UnityEngine;
 
 namespace Scripts.Main.Systems
 {
-    public class ScreenBoundariesSystem : SystemBase
+    public class ScreenBoundariesSystem : IEcsRunSystem
     {
-        private Vector2 _screenBounds;
+        private IGetScreenBounds _getScreenBounds;
 
-        public override void Init(WorldBase world)
+        private EcsFilter<AffectedByBoundariesComponent, TransformComponent, SpriteRendererComponent,
+            GameObjectComponent> _boundariesFilter;
+
+        public void Run()
         {
-            base.Init(world);
-            _screenBounds = _world.GetBehavior<IGetScreenBounds>().ScreenBounds;
-        }
+            ref var screenBounds = ref _getScreenBounds.ScreenBounds;
 
-        public override void Run()
-        {
-            var affectedByBoundaries = _world.GetEntity<AffectedByBoundariesComponent>();
-
-            for (int i = 0; i < affectedByBoundaries.Length; i++)
+            foreach (var i in _boundariesFilter)
             {
-                var currEntity = affectedByBoundaries[i];
-                var transformComponent = currEntity.GetComponent<TransformComponent>();
-
-                if (transformComponent is null)
+                ref var currEntity = ref _boundariesFilter.GetEntity(i);
+                ref var transformComponent = ref _boundariesFilter.Get2(i);
+                ref var spriteRendererComponent = ref _boundariesFilter.Get3(i);
+                ref var gameObjectComponent = ref _boundariesFilter.Get4(i);
+                
+                if (!gameObjectComponent.GameObject.activeSelf)
                     continue;
 
-                var playerComponent = currEntity.GetComponent<PlayerComponent>();
-
-                if (playerComponent is { })
+                if (currEntity.Has<PlayerComponent>())
                 {
-                    HandlePlayer(currEntity, transformComponent);
+                    HandlePlayer(ref transformComponent, ref spriteRendererComponent,
+                        ref screenBounds);
                     continue;
                 }
 
-                HandleObjects(currEntity, transformComponent);
+                HandleObjects(ref currEntity, ref transformComponent, ref spriteRendererComponent,
+                    ref screenBounds);
             }
         }
 
-        private void HandlePlayer(EntityBase playerEntity, TransformComponent transformComponent)
+        private void HandlePlayer(ref TransformComponent transformComponent,
+            ref SpriteRendererComponent spriteRendererComponent, ref Vector2 screenBounds)
         {
-            GetBoundingData(playerEntity, transformComponent, out var objectHalfSize, out var absPosition,
+            GetBoundingData(ref spriteRendererComponent, ref transformComponent, out var objectHalfSize,
+                out var absPosition,
                 out var position);
 
             transformComponent.Transform.position = new Vector3(
-                absPosition.x >= _screenBounds.x + objectHalfSize.x ? -position.x : position.x,
-                absPosition.y >= _screenBounds.y + objectHalfSize.y ? -position.y : position.y, position.z);
+                absPosition.x >= screenBounds.x + objectHalfSize.x ? -position.x : position.x,
+                absPosition.y >= screenBounds.y + objectHalfSize.y ? -position.y : position.y, position.z);
         }
 
-        private void HandleObjects(EntityBase entity, TransformComponent transformComponent)
+        private void HandleObjects(ref EcsEntity entity, ref TransformComponent transformComponent,
+            ref SpriteRendererComponent spriteRendererComponent, ref Vector2 screenBounds)
         {
-            GetBoundingData(entity, transformComponent, out var objectHalfSize, out var absPosition,
+            GetBoundingData(ref spriteRendererComponent, ref transformComponent, out var objectHalfSize,
+                out var absPosition,
                 out var position);
 
-            var affectedByBoundariesComponent = entity.GetComponent<AffectedByBoundariesComponent>();
+            ref var affectedByBoundariesComponent = ref entity.Get<AffectedByBoundariesComponent>();
 
-            if (absPosition.x >= _screenBounds.x + objectHalfSize.x + affectedByBoundariesComponent.BoundsOffset.x ||
-                absPosition.y >= _screenBounds.y + objectHalfSize.y + affectedByBoundariesComponent.BoundsOffset.y)
+            if (absPosition.x >= screenBounds.x + objectHalfSize.x + affectedByBoundariesComponent.BoundsOffset.x ||
+                absPosition.y >= screenBounds.y + objectHalfSize.y + affectedByBoundariesComponent.BoundsOffset.y)
             {
-                var gameObjectComponent = entity.GetComponent<GameObjectComponent>();
-                if (gameObjectComponent is { })
+                if (entity.Has<GameObjectComponent>())
+                {
+                    var gameObjectComponent = entity.Get<GameObjectComponent>();
                     gameObjectComponent.GameObject.SetActiveOptimized(false);
+                }
 
-                entity.AddComponent(new RecyclingComponent());
+                entity.Get<RecyclingComponent>();
             }
         }
 
-        private void GetBoundingData(EntityBase entity, TransformComponent transformComponent,
+        private void GetBoundingData(ref SpriteRendererComponent spriteRendererComponent,
+            ref TransformComponent transformComponent,
             out Vector2 objectHalfSize, out Vector2 absPosition, out Vector3 position)
         {
-            var spriteRendererComponent = entity.GetComponent<SpriteRendererComponent>();
             var boundsSize = spriteRendererComponent.SpriteRenderer.bounds.size;
             objectHalfSize = new Vector2(boundsSize.x / 2, boundsSize.y / 2);
             position = transformComponent.Transform.position;
