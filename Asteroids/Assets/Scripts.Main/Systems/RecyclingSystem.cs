@@ -2,7 +2,6 @@ using Leopotam.Ecs;
 using Scripts.CommonExtensions;
 using Scripts.Main.Components;
 using Scripts.Main.Pools;
-using UnityEngine;
 
 namespace Scripts.Main.Systems
 {
@@ -48,17 +47,8 @@ namespace Scripts.Main.Systems
                 {
                     _ufoEntityPool.Return(ref recyclingEntity);
                     recyclingEntity.Del<RecyclingComponent>();
-                    continue;
                 }
             }
-            
-            //
-            // if (entity.GetComponent<UfoComponent>() is { })
-            // {
-            //     entity.RemoveComponent<RecyclingComponent>();
-            //     entity.AddComponent(new RecyclingUfoComponent());
-            // }
-
         }
     }
 }
