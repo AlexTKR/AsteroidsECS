@@ -59,9 +59,6 @@ namespace Scripts.Main.Systems
             if (_playerDiedFilter.IsEmpty())
                 return;
 
-            ref var playerEntity = ref _playerDiedFilter.GetEntity(0);
-            playerEntity.Del<DiedComponent>();
-
             if (!_gameScoreFilter.IsEmpty())
             {
                 ref var gameScoreComponent = ref _gameScoreFilter.Get1(0);
