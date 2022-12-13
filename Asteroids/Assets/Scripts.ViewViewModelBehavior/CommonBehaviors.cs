@@ -4,19 +4,21 @@ using UnityEngine;
 
 namespace Scripts.ViewViewModelBehavior
 {
-    public interface IMainHubBehavior 
+    public interface IMainHubBehavior
     {
-        IReactiveValue<Vector2> PlayerCoordinates { get; }
-        IReactiveValue<float> PlayerTurnAngle { get; }
         IReactiveValue<float> PlayerInstantSpeed { get; }
         IReactiveValue<int> LaserCount { get; }
         IReactiveValue<float> LaserDelay { get; }
     }
 
-    public interface IGameOverPanelBehaviour 
+    public interface IGameOverPanelBehaviour : ISetActivePanel
     {
         IReactiveValue<int> Score { get; }
         Action OnRestartButtonPressed { get; set; }
-        Action OnGameOver { get; }
+    }
+
+    public interface ISetActivePanel
+    {
+        void SetActiveStatus(bool status);
     }
 }

@@ -102,10 +102,6 @@ namespace Scripts.Main.Components
     {
     }
 
-    public struct SpawnSmallAsteroidComponent
-    {
-    }
-
     public struct UfoComponent
     {
     }
@@ -123,12 +119,12 @@ namespace Scripts.Main.Components
     {
     }
 
-    public struct DelayLaserComponent
+    public struct LaserDelayComponent
     {
         public TimeSpan DelayTimer;
     }
 
-    public struct ActiveLaserComponent
+    public struct LaserActiveComponent
     {
         public TimeSpan ActiveTimer;
     }

@@ -12,20 +12,16 @@ namespace Scripts.Main.Systems
 
         public void Init()
         {
-            var playerPrefab = _loadPlayer.LoadPLayer().Load(runAsync: false).Result.gameObject;
+            var playerPrefab = _loadPlayer.LoadPLayer().Load(runAsync: false).Result;
             var playerSpawnEntity = _world.NewEntity();
             playerSpawnEntity.Get<SpawnComponent>() = new SpawnComponent()
             {
-                Prefab = playerPrefab,
+                Prefab = playerPrefab.gameObject,
                 Position = Vector3.zero,
                 Rotation = Quaternion.identity,
                 Parent = null,
                 IsActive = true
             };
-            
-            //playerEntity.AddComponent(new GameScoreComponent()); //TODO GameScore ?
-            
-            // world.AddEntity(player.LaserMonoEntity.Convert(_world.GetNewEntity()));
         }
     }
 }
