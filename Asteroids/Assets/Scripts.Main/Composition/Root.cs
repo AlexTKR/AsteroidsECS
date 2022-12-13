@@ -22,8 +22,10 @@ namespace Scripts.Main.Composition
         private IEntityPool<EcsEntity, SmallAsteroidComponent> _smallAsteroidsEntityPool;
         private IEntityPool<EcsEntity, BulletComponent> _bulletEntityPool;
         private IEntityPool<EcsEntity, UfoComponent> _ufoEntityPool;
+        private IRunner _runner = new Runner();
+        private IRunner _fixedRunner = new Runner();
 
-        #region Behaviours
+        #region InjectBehaviours
 
         private ILoadPlayer _loadPlayer;
         private ILoadBullet _loadBullet;
@@ -31,6 +33,7 @@ namespace Scripts.Main.Composition
         private IGetScreenBounds _getScreenBounds;
         private IMainHubBehavior _mainHubBehavior;
         private IGameOverPanelBehaviour _gameOverPanelBehaviour;
+        private IPauseBehaviour _pauser;
 
         #endregion
 
@@ -67,6 +70,14 @@ namespace Scripts.Main.Composition
             _runSystems = new EcsSystems(_world);
             _physicsRunSystems = new EcsSystems(_world);
 
+            _runner.SetRunCallBack(() => { _runSystems?.Run(); });
+            _fixedRunner.SetRunCallBack(() => { _physicsRunSystems?.Run(); });
+            _pauser = new Pauser(new[]
+            {
+                (IPauseBehaviour)_runner,
+                (IPauseBehaviour)_fixedRunner
+            });
+
             _runSystems.Inject(_loadPlayer)
                 .Inject(_loadBullet)
                 .Inject(_loadScene)
@@ -77,6 +88,7 @@ namespace Scripts.Main.Composition
                 .Inject(_getScreenBounds)
                 .Inject(_mainHubBehavior)
                 .Inject(_gameOverPanelBehaviour)
+                .Inject(_pauser)
                 .Add(new PlayerInitSystem())
                 .Add(new ScoreInitSystem())
                 .Add(new PlayerDamageSystem())
@@ -104,12 +116,12 @@ namespace Scripts.Main.Composition
 
         private void Update()
         {
-            _runSystems?.Run();
+            _runner?.Run();
         }
 
         private void FixedUpdate()
         {
-            _physicsRunSystems?.Run();
+            _fixedRunner?.Run();
         }
 
         private void OnDestroy()
