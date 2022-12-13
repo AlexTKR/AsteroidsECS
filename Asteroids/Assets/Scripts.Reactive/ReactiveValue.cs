@@ -2,12 +2,12 @@ using System;
 
 namespace Scripts.Reactive
 {
-    public interface IRaiser
+    public interface IRaiser<T>
     {
-        event Action OnChanged;
+        event Action<T> OnChanged;
     }
 
-    public interface IReactiveValue<T> : IRaiser
+    public interface IReactiveValue<T> : IRaiser<T>
     {
         T Value { get; set; }
     }
@@ -27,10 +27,10 @@ namespace Scripts.Reactive
 
                 _value = value;
                 _initialSet = true;
-                OnChanged?.Invoke();
+                OnChanged?.Invoke(value);
             }
         }
 
-        public event Action OnChanged;
+        public event Action<T> OnChanged;
     }
 }

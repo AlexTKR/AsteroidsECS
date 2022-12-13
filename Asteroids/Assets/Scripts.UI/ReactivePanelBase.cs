@@ -9,16 +9,18 @@ namespace Scripts.UI
     public static class Extensions
     {
         public static void Subscribe<T>(this MonoBehaviour gameObject, IReactiveValue<T> reactiveValue,
-            Action<T> action)
+            Action<T> action, ref Action  onDestroy)
         {
-            reactiveValue.OnChanged += () => { action(reactiveValue.Value); };
+            Action<T> onChanged = value => { action?.Invoke(value); };
+            reactiveValue.OnChanged += onChanged;
+            onDestroy += () => { reactiveValue.OnChanged -= onChanged; };
         }
     }
-    
+
     public abstract class ReactivePanelBase<T> : MonoBehaviour, ISetActivePanel
     {
         protected T _viewModel;
-        protected Action _onDestroy;
+        protected  Action _onDestroy;
 
         public virtual void Init(T viewModel)
         {
@@ -30,7 +32,7 @@ namespace Scripts.UI
             _onDestroy?.Invoke();
             _onDestroy = null;
         }
-        
+
         public void SetActiveStatus(bool status)
         {
             gameObject.SetActiveOptimized(status);

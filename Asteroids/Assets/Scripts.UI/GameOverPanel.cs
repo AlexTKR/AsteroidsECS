@@ -16,7 +16,7 @@ namespace Scripts.UI
             _scoreText.Subscribe(viewModel.Score, value =>
             {
                 _scoreText.text = $"Score: {value}";
-            });
+            },ref _onDestroy);
             
             _restartButton.onClick.AddListener(() =>
             {
