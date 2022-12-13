@@ -16,5 +16,6 @@ MonoBehaviour:
   SmallAsteroidsSpawnCountDegrees: {x: -40, y: 40}
   LaserCount: 4
   LaserDelay: 20
-  AccelerationFadeValue: 0.01
-  playerRotationSpeed: 100
+  LaserActiveTime: 1
+  AsteroidsSpawnDelay: 1.5
+  UfoSpawnDelay: 4

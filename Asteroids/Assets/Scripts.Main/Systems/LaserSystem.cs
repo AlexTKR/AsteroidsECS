@@ -51,12 +51,12 @@ namespace Scripts.Main.Systems
 
             if (--laserComponent.LaserCount <= 0)
                 laserEntity.Get<LaserDelayComponent>() = new LaserDelayComponent()
-                    { DelayTimer = DateTime.Now.TimeOfDay + TimeSpan.FromSeconds(20f) }; //TODO move TO game settings
+                    { DelayTimer = DateTime.Now.TimeOfDay + TimeSpan.FromSeconds(RuntimeSharedData.GameSettings.LaserDelay) };
 
             gameObjectComponent.GameObject.SetActiveOptimized(true);
             laserEntity.Get<LaserActiveComponent>() = new LaserActiveComponent()
             {
-                ActiveTimer = DateTime.Now.TimeOfDay + TimeSpan.FromSeconds(1f) //TODO move TO game settings
+                ActiveTimer = DateTime.Now.TimeOfDay + TimeSpan.FromSeconds(RuntimeSharedData.GameSettings.LaserActiveTime) 
             };
         }
     }

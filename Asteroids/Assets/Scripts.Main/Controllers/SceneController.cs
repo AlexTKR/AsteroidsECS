@@ -17,7 +17,7 @@ namespace Scripts.Main.Controllers
             loadSceneAsync.completed += loadOperation =>
             {
                 SceneManager.SetActiveScene(SceneManager.GetSceneByBuildIndex(targetIndex));
-                var unloadOperation = SceneManager.UnloadSceneAsync(currentScene);
+                SceneManager.UnloadSceneAsync(currentScene);
             };
         }
         

@@ -3,6 +3,7 @@ using Controllers;
 using Leopotam.Ecs;
 using Scripts.Main.Components;
 using Scripts.Main.Pools;
+using Scripts.Main.Settings;
 using UnityEngine;
 
 namespace Scripts.Main.Systems
@@ -25,44 +26,45 @@ namespace Scripts.Main.Systems
 
         public void Run()
         {
-            if (_spawnDelayFilter.IsEmpty())
+            if (!_spawnDelayFilter.IsEmpty())
             {
-                if (_bigAsteroidsEntityPool.EntityCount > 0)
-                {
-                    ref var pooledEntity = ref _bigAsteroidsEntityPool.Get();
-                    pooledEntity.Get<EntityScreenPlacementComponent>();
-                }
-                else
-                {
-                    var spawnEntity = _ecsWorld.NewEntity();
-                    spawnEntity.Get<SpawnComponent>() = new SpawnComponent()
-                    {
-                        Prefab = _bigAsteroidMonoEntityPrefab,
-                        Position = Vector3.zero,
-                        Rotation = Quaternion.identity,
-                        Parent = _parent
-                    };
-                    spawnEntity.Get<EntityScreenPlacementComponent>();
-                }
+                ref var delayEntity = ref _spawnDelayFilter.GetEntity(0);
 
-                SetDelay();
+                ref var spawnDelayComponent = ref _spawnDelayFilter.Get1(0);
+                if (DateTime.Now.TimeOfDay >= spawnDelayComponent.Delay)
+                {
+                    delayEntity.Del<AsteroidsSpawnDelayComponent>();
+                }
+                
                 return;
             }
 
-            ref var delayEntity = ref _spawnDelayFilter.GetEntity(0);
-            ref var spawnDelayComponent = ref _spawnDelayFilter.Get1(0);
-
-            if (DateTime.Now.TimeOfDay >= spawnDelayComponent.Delay)
+            if (_bigAsteroidsEntityPool.EntityCount > 0)
             {
-                delayEntity.Del<AsteroidsSpawnDelayComponent>();
+                ref var pooledEntity = ref _bigAsteroidsEntityPool.Get();
+                pooledEntity.Get<EntityScreenPlacementComponent>();
             }
+            else
+            {
+                var spawnEntity = _ecsWorld.NewEntity();
+                spawnEntity.Get<SpawnComponent>() = new SpawnComponent()
+                {
+                    Prefab = _bigAsteroidMonoEntityPrefab,
+                    Position = Vector3.zero,
+                    Rotation = Quaternion.identity,
+                    Parent = _parent
+                };
+                spawnEntity.Get<EntityScreenPlacementComponent>();
+            }
+
+            SetDelay();
         }
 
         private void SetDelay()
         {
             _ecsWorld.NewEntity().Get<AsteroidsSpawnDelayComponent>() = new AsteroidsSpawnDelayComponent()
             {
-                Delay = DateTime.Now.TimeOfDay.Add(TimeSpan.FromSeconds(2f)) //TODO MOVE to game sett
+                Delay = DateTime.Now.TimeOfDay.Add(TimeSpan.FromSeconds(RuntimeSharedData.GameSettings.AsteroidsSpawnDelay)) 
             };
         }
     }

@@ -10,8 +10,9 @@ namespace Scripts.Main.Settings
 
         public int LaserCount;
         public int LaserDelay;
+        public int LaserActiveTime;
 
-        public float AccelerationFadeValue;
-        public int playerRotationSpeed;
+        public float AsteroidsSpawnDelay;
+        public float UfoSpawnDelay;
     }
 }
