@@ -8,11 +8,12 @@ namespace Scripts.Main.Systems
     public class CollisionSystem : IEcsRunSystem
     {
         private EcsFilter<TriggerComponent, GameObjectComponent> _triggerFilter;
+        private EcsFilter<GameScoreComponent> _scoreFilter;
         private EcsWorld _ecsWorld;
 
         public void Run()
         {
-            var scoreEntity = _ecsWorld.NewEntity().Get<GameScoreComponent>();
+            var _scoreSystemEnabled = !_scoreFilter.IsEmpty();
             int score = 0;
 
             foreach (var i in _triggerFilter)
@@ -20,6 +21,10 @@ namespace Scripts.Main.Systems
                 ref var triggerEntity = ref _triggerFilter.GetEntity(i);
                 ref var triggerComponent = ref _triggerFilter.Get1(i);
                 var other = triggerComponent.Collider;
+                var physicsAffectedEntityToMono =
+                    other.GetComponent<PhysicsAffectedEntityToMono>();
+                ref var otherEntity = ref physicsAffectedEntityToMono.Entity;
+                
                 triggerEntity.Del<TriggerComponent>();
 
                 if (triggerEntity.Has<LaserComponent>())
@@ -36,10 +41,6 @@ namespace Scripts.Main.Systems
 
                 if (triggerEntity.Has<BigAsteroidComponent>())
                 {
-                    var physicsAffectedEntityToMono =
-                        other.GetComponent<PhysicsAffectedEntityToMono>();
-                    ref var otherEntity = ref physicsAffectedEntityToMono.Entity;
-
                     if (otherEntity.Has<BulletComponent>())
                     {
                         triggerEntity.Get<DamageComponent>();
@@ -48,14 +49,19 @@ namespace Scripts.Main.Systems
 
                 triggerEntity.Get<RecyclingComponent>();
 
-                if (!triggerEntity.Has<ScoreEntityComponent>())
+                if (!triggerEntity.Has<ScoreEntityComponent>() || 
+                    otherEntity.Has<PlayerComponent>())
                     continue;
 
                 ref var scoreEntityComponent = ref triggerEntity.Get<ScoreEntityComponent>();
                 score += scoreEntityComponent.ScoreForEntity;
             }
 
-            scoreEntity.Score = score;
+            if (!_scoreSystemEnabled)
+                return;
+            
+            ref var scoreEntity = ref _scoreFilter.Get1(0);
+            scoreEntity.Score += score;
         }
     }
 }

@@ -1,5 +1,7 @@
 using System;
+using Scripts.CommonExtensions;
 using Scripts.Reactive;
+using Scripts.ViewViewModelBehavior;
 using UnityEngine;
 
 namespace Scripts.UI
@@ -13,7 +15,7 @@ namespace Scripts.UI
         }
     }
     
-    public abstract class ReactivePanelBase<T> : MonoBehaviour
+    public abstract class ReactivePanelBase<T> : MonoBehaviour, ISetActivePanel
     {
         protected T _viewModel;
         protected Action _onDestroy;
@@ -27,6 +29,11 @@ namespace Scripts.UI
         {
             _onDestroy?.Invoke();
             _onDestroy = null;
+        }
+        
+        public void SetActiveStatus(bool status)
+        {
+            gameObject.SetActiveOptimized(status);
         }
     }
 }

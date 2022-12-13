@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Scripts.Main.Systems
 {
-    public class MovableSystem : IEcsRunSystem
+    public class MovementSystem : IEcsRunSystem
     {
         private EcsFilter<MovableComponent, TransformComponent, GameObjectComponent> _movableFilter;
 

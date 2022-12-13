@@ -7,6 +7,7 @@ namespace Scripts.Main.Systems
     public class InputSystem : IEcsInitSystem, IEcsRunSystem
     {
         private EcsFilter<PlayerComponent, MovableWithInertiaComponent> _playerFilter;
+        private EcsFilter<LaserComponent> _laserFilter;
         private EcsWorld _ecsWorld;
 
         private PlayerInputActions _inputActions;
@@ -33,61 +34,39 @@ namespace Scripts.Main.Systems
             {
                 shootBulletsButtonPressed = false;
                 _ecsWorld.NewEntity().Get<ShootBulletComponent>();
+                return;
             }
-            
-            // if (shootLaserButtonPressed)
-            // {
-            //     shootLaserButtonPressed = false;
-            //     laserComponent = new ShootLaserComponent();
-            // }
 
-            // var laserEntities = _world.GetEntity<LaserComponent>();
-            //
-            // foreach (var i in _playerFilter)
-            // {
-            //     var playerEntity = _playerFilter.GetEntity(i);
-            //
-            //     if (playerMovementInputComponent)
-            //         playerEntity.AddComponent(playerMovementInputComponent);
-            //
-            //     if (playerRotationInputComponent is { })
-            //         playerEntity.AddComponent(playerRotationInputComponent);
-            //
-            //     if (bulletComponent is { })
-            //         playerEntity.AddComponent(bulletComponent);
-            // }
-
-            // for (int i = 0; i < laserEntities.Length; i++)
-            // {
-            //     var laserEntity = laserEntities[i];
-            //
-            //     if (laserComponent is { } && laserEntity.GetComponent<DelayLaserComponent>() is null)
-            //         laserEntity.AddComponent(laserComponent);
-            // }
+            if (shootLaserButtonPressed)
+            {
+                shootLaserButtonPressed = false;
+                ref var laserEntity = ref _laserFilter.GetEntity(0);
+                laserEntity.Get<ShootLaserComponent>();
+            }
         }
 
         private void ProcessPlayerMovementInput(ref Vector2 movementInput)
         {
-            foreach (var i in _playerFilter)
+            if(_playerFilter.IsEmpty())
+                return;
+            
+            ref var playerEntity = ref _playerFilter.GetEntity(0);
+            ref var movableWithInertiaComponent = ref _playerFilter.Get2(0);
+
+            if (movementInput.y >= 1f)
             {
-                ref var playerEntity = ref _playerFilter.GetEntity(i);
-                ref var movableWithInertiaComponent = ref _playerFilter.Get2(i);
-
-                if (movementInput.y >= 1f)
+                playerEntity.Get<AccelerationComponent>() = new AccelerationComponent()
                 {
-                    playerEntity.Get<AccelerationComponent>() = new AccelerationComponent()
-                    {
-                        Acceleration = movableWithInertiaComponent.InstantSpeed
-                    };
-                }
+                    Acceleration = movableWithInertiaComponent.InstantSpeed
+                };
+            }
 
-                if (movementInput.x != 0)
+            if (movementInput.x != 0)
+            {
+                playerEntity.Get<RotationComponent>() = new RotationComponent()
                 {
-                    playerEntity.Get<RotationComponent>() = new RotationComponent()
-                    {
-                        Rotation = movementInput.x
-                    };
-                }
+                    Rotation = movementInput.x
+                };
             }
         }
     }

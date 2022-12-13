@@ -3,8 +3,10 @@ using Leopotam.Ecs;
 using Scripts.CommonBehaviours;
 using Scripts.Main.Components;
 using Scripts.Main.Controllers;
+using Scripts.Main.Converters;
 using Scripts.Main.Pools;
 using Scripts.Main.Systems;
+using Scripts.ViewViewModelBehavior;
 using UnityEngine;
 using Zenject;
 
@@ -25,18 +27,26 @@ namespace Scripts.Main.Composition
 
         private ILoadPlayer _loadPlayer;
         private ILoadBullet _loadBullet;
+        private ILoadScene _loadScene;
         private IGetScreenBounds _getScreenBounds;
+        private IMainHubBehavior _mainHubBehavior;
+        private IGameOverPanelBehaviour _gameOverPanelBehaviour;
 
         #endregion
 
         [Inject]
         private void Construct(IInitiator initiator, ILoadPlayer loadPlayer,
-            IGetScreenBounds getScreenBounds, ILoadBullet loadBullet)
+            IGetScreenBounds getScreenBounds, ILoadBullet loadBullet,
+            IMainHubBehavior mainHubBehavior, IGameOverPanelBehaviour gameOverPanelBehaviour,
+            ILoadScene loadScene)
         {
             _initiator = initiator;
             _loadPlayer = loadPlayer;
             _getScreenBounds = getScreenBounds;
             _loadBullet = loadBullet;
+            _mainHubBehavior = mainHubBehavior;
+            _gameOverPanelBehaviour = gameOverPanelBehaviour;
+            _loadScene = loadScene;
         }
 
         private void Start()
@@ -59,13 +69,19 @@ namespace Scripts.Main.Composition
 
             _runSystems.Inject(_loadPlayer)
                 .Inject(_loadBullet)
+                .Inject(_loadScene)
                 .Inject(_bigAsteroidsEntityPool)
                 .Inject(_smallAsteroidsEntityPool)
                 .Inject(_bulletEntityPool)
                 .Inject(_ufoEntityPool)
                 .Inject(_getScreenBounds)
+                .Inject(_mainHubBehavior)
+                .Inject(_gameOverPanelBehaviour)
                 .Add(new PlayerInitSystem())
+                .Add(new ScoreInitSystem())
+                .Add(new PlayerDamageSystem())
                 .Add(new InputSystem())
+                .Add(new LaserSystem())
                 .Add(new BigAsteroidsSpawnSystem())
                 .Add(new SmallAsteroidsSpawnSystem())
                 .Add(new UfoSpawnSystem())
@@ -74,9 +90,11 @@ namespace Scripts.Main.Composition
                 .Add(new EntityScreenPlacementSystem())
                 .Add(new MovementWithInertiaSystem())
                 .Add(new RotationSystem())
-                .Add(new MovableSystem())
+                .Add(new MovementSystem())
                 .Add(new ScreenBoundariesSystem())
                 .Add(new RecyclingSystem())
+                .Add(new UiSystem())
+                .Add(new GameOverSystem())
                 .Init();
 
             _physicsRunSystems
