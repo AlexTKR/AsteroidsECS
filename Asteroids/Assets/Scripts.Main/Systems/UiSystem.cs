@@ -1,5 +1,6 @@
 using System;
 using Leopotam.Ecs;
+using Scripts.CommonBehaviours;
 using Scripts.Main.Components;
 using Scripts.Main.Controllers;
 using Scripts.ViewViewModelBehavior;
@@ -12,6 +13,7 @@ namespace Scripts.Main.Systems
         private IGameOverPanelBehaviour _gameOverPanelBehaviour;
         private ILoadScene _loadScene;
 
+        private EcsWorld _ecsWorld;
         private EcsFilter<PlayerComponent, MovableWithInertiaComponent> _playerFilter;
         private EcsFilter<PlayerComponent, DiedComponent> _playerDiedFilter;
         private EcsFilter<LaserComponent> _laserFilter;
@@ -19,7 +21,11 @@ namespace Scripts.Main.Systems
 
         public void Init()
         {
-            _gameOverPanelBehaviour.OnRestartButtonPressed += () => { _loadScene.LoadScene(0); };
+            _gameOverPanelBehaviour.OnRestartButtonPressed += () =>
+            {
+                _gameOverPanelBehaviour.SetActiveStatus(false);
+                _ecsWorld.NewEntity().Get<RestartGameComponent>();
+            };
         }
 
         public void Run()
@@ -40,6 +46,9 @@ namespace Scripts.Main.Systems
 
         private void HandleLaserOutput()
         {
+            if (IPauseBehaviour.IsPaused)
+                return;
+
             if (_laserFilter.IsEmpty())
                 return;
 
@@ -47,9 +56,9 @@ namespace Scripts.Main.Systems
             ref var laserComponent = ref _laserFilter.Get1(0);
             _mainHubBehavior.LaserCount.Value = laserComponent.LaserCount;
 
-            if (laserEntity.Has<LaserDelayComponent>())
+            if (laserEntity.Has<DelayComponent>())
             {
-                ref var delayLaserComponent = ref laserEntity.Get<LaserDelayComponent>();
+                ref var delayLaserComponent = ref laserEntity.Get<DelayComponent>();
                 _mainHubBehavior.LaserDelay.Value = (delayLaserComponent.DelayTimer - DateTime.Now.TimeOfDay).Seconds;
             }
         }
@@ -58,6 +67,9 @@ namespace Scripts.Main.Systems
         {
             if (_playerDiedFilter.IsEmpty())
                 return;
+
+            ref var playerDiedEntity = ref _playerDiedFilter.GetEntity(0);
+            playerDiedEntity.Del<DiedComponent>();
 
             if (!_gameScoreFilter.IsEmpty())
             {

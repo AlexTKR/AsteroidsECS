@@ -5,18 +5,18 @@ namespace Scripts.CommonBehaviours
     public class Pauser : IPauseBehaviour
     {
         private IPauseBehaviour[] _pauseBehaviours;
-        
-        public Pauser(IPauseBehaviour[] pauseBehaviours)
+
+        [Inject]
+        public void Construct(IPauseBehaviour[] pauseBehaviours)
         {
             _pauseBehaviours = pauseBehaviours;
         }
 
         public void SetPausedStatus(bool status)
         {
-            if(_pauseBehaviours is null)
-                return;
+            IPauseBehaviour.IsPaused = status;
             
-            for (int i = 0; i < _pauseBehaviours.Length; i++)
+            for (int i = 0; i < _pauseBehaviours?.Length; i++)
             {
                 _pauseBehaviours[i].SetPausedStatus(status);
             }

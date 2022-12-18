@@ -1,6 +1,7 @@
 using System;
 using Controllers;
 using Leopotam.Ecs;
+using Scripts.CommonBehaviours;
 using Scripts.Main.Components;
 using Scripts.Main.Pools;
 using Scripts.Main.Settings;
@@ -11,7 +12,9 @@ namespace Scripts.Main.Systems
     public class BigAsteroidsSpawnSystem : IEcsInitSystem, IEcsRunSystem
     {
         private EcsWorld _ecsWorld;
-        private EcsFilter<AsteroidsSpawnDelayComponent> _spawnDelayFilter;
+        private EcsFilter<BigAsteroidSystemComponent> _bigAsteroidSystemFilter;
+        private EcsFilter<BigAsteroidSystemComponent, DelayComponent> _delayFilter;
+        private EcsFilter<BigAsteroidSystemComponent, SetDelayComponent> _setDelayFilter;
         private IEntityPool<EcsEntity, BigAsteroidComponent> _bigAsteroidsEntityPool;
         private ILoadAsteroids _loadAsteroids;
         private GameObject _bigAsteroidMonoEntityPrefab;
@@ -19,23 +22,36 @@ namespace Scripts.Main.Systems
 
         public void Init()
         {
+            var asteroidSystemEntity = _ecsWorld.NewEntity();
+            asteroidSystemEntity.Get<BigAsteroidSystemComponent>();
+            asteroidSystemEntity.Get<SetDelayComponent>();
             _parent = new GameObject("BigAsteroidsHolder").transform;
             _bigAsteroidMonoEntityPrefab = _loadAsteroids.LoadBigAsteroid().Load(runAsync: false).Result.gameObject;
-            SetDelay();
         }
 
         public void Run()
         {
-            if (!_spawnDelayFilter.IsEmpty())
-            {
-                ref var delayEntity = ref _spawnDelayFilter.GetEntity(0);
+            if (IPauseBehaviour.IsPaused)
+                return;
 
-                ref var spawnDelayComponent = ref _spawnDelayFilter.Get1(0);
-                if (DateTime.Now.TimeOfDay >= spawnDelayComponent.Delay)
+            if (!_setDelayFilter.IsEmpty())
+            {
+                ref var setDelayEntity = ref _setDelayFilter.GetEntity(0);
+                setDelayEntity.Del<SetDelayComponent>();
+                SetDelay();
+                return;
+            }
+
+            if (!_delayFilter.IsEmpty())
+            {
+                ref var delayEntity = ref _delayFilter.GetEntity(0);
+
+                ref var spawnDelayComponent = ref _delayFilter.Get2(0);
+                if (DateTime.Now.TimeOfDay >= spawnDelayComponent.DelayTimer)
                 {
-                    delayEntity.Del<AsteroidsSpawnDelayComponent>();
+                    delayEntity.Del<DelayComponent>();
                 }
-                
+
                 return;
             }
 
@@ -62,9 +78,11 @@ namespace Scripts.Main.Systems
 
         private void SetDelay()
         {
-            _ecsWorld.NewEntity().Get<AsteroidsSpawnDelayComponent>() = new AsteroidsSpawnDelayComponent()
+            ref var delayEntity = ref _bigAsteroidSystemFilter.GetEntity(0);
+            delayEntity.Get<DelayComponent>() = new DelayComponent
             {
-                Delay = DateTime.Now.TimeOfDay.Add(TimeSpan.FromSeconds(RuntimeSharedData.GameSettings.AsteroidsSpawnDelay)) 
+                DelayTimer = DateTime.Now.TimeOfDay.Add(
+                    TimeSpan.FromSeconds(RuntimeSharedData.GameSettings.AsteroidsSpawnDelay))
             };
         }
     }

@@ -1,4 +1,5 @@
 using Leopotam.Ecs;
+using Scripts.CommonBehaviours;
 using Scripts.Main.Components;
 using Scripts.Main.Converters;
 using UnityEngine;
@@ -11,13 +12,16 @@ namespace Scripts.Main.Systems
 
         public void Run()
         {
+            if (IPauseBehaviour.IsPaused)
+                return;
+
             foreach (var i in _movableFilter)
             {
                 ref var entity = ref _movableFilter.GetEntity(i);
                 ref var movableComponent = ref _movableFilter.Get1(i);
                 ref var transformComponent = ref _movableFilter.Get2(i);
                 ref var gameObjectComponent = ref _movableFilter.Get3(i);
-                
+
                 if (!gameObjectComponent.GameObject.activeSelf)
                     continue;
 
@@ -31,7 +35,7 @@ namespace Scripts.Main.Systems
                 {
                     direction = movableComponent.Direction;
                 }
-                
+
                 transformComponent.Transform.localPosition += direction * movableComponent.Speed * Time.deltaTime;
             }
         }

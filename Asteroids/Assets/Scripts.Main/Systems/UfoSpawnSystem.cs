@@ -1,6 +1,7 @@
 using System;
 using Controllers;
 using Leopotam.Ecs;
+using Scripts.CommonBehaviours;
 using Scripts.Main.Components;
 using Scripts.Main.Pools;
 using Scripts.Main.Settings;
@@ -11,7 +12,9 @@ namespace Scripts.Main.Systems
     public class UfoSpawnSystem : IEcsInitSystem, IEcsRunSystem
     {
         private EcsWorld _ecsWorld;
-        private EcsFilter<UfoSpawnDelayComponent> _spawnDelayFilter;
+        private EcsFilter<UfoSystemComponent> _ufoSystemFilter;
+        private EcsFilter<UfoSystemComponent, DelayComponent> _delayFilter;
+        private EcsFilter<UfoSystemComponent, SetDelayComponent> _setDelayFilter;
         private EcsFilter<PlayerComponent, TransformComponent> _playerFilter;
         private IEntityPool<EcsEntity, UfoComponent> _ufoEntityPool;
         private ILoadUfo _loadUfo;
@@ -20,25 +23,46 @@ namespace Scripts.Main.Systems
 
         public void Init()
         {
+            var ufoSystemEntity = _ecsWorld.NewEntity();
+            ufoSystemEntity.Get<UfoSystemComponent>();
+            ufoSystemEntity.Get<SetDelayComponent>();
             _parent = new GameObject("UfoHolder").transform;
             _ufoMonoEntityPrefab = _loadUfo.LoadUfo().Load(runAsync: false).Result.gameObject;
-            SetDelay();
         }
 
         public void Run()
         {
+            if (IPauseBehaviour.IsPaused)
+                return;
+            
+            if (!_setDelayFilter.IsEmpty())
+            {
+                ref var setDelayEntity = ref _setDelayFilter.GetEntity(0);
+                setDelayEntity.Del<SetDelayComponent>();
+                SetDelay();
+                return;
+            }
+            
+            if (!_setDelayFilter.IsEmpty())
+            {
+                ref var setDelayEntity = ref _setDelayFilter.GetEntity(0);
+                setDelayEntity.Del<SetDelayComponent>();
+                SetDelay();
+                return;
+            }
+
             ref var playerTransformComponent = ref _playerFilter.Get2(0);
 
-            if (!_spawnDelayFilter.IsEmpty())
+            if (!_delayFilter.IsEmpty())
             {
-                ref var delayEntity = ref _spawnDelayFilter.GetEntity(0);
+                ref var delayEntity = ref _delayFilter.GetEntity(0);
 
-                ref var spawnDelayComponent = ref _spawnDelayFilter.Get1(0);
-                if (DateTime.Now.TimeOfDay >= spawnDelayComponent.Delay)
+                ref var spawnDelayComponent = ref _delayFilter.Get2(0);
+                if (DateTime.Now.TimeOfDay >= spawnDelayComponent.DelayTimer)
                 {
-                    delayEntity.Del<UfoSpawnDelayComponent>();
+                    delayEntity.Del<DelayComponent>();
                 }
-                
+
                 return;
             }
 
@@ -70,9 +94,11 @@ namespace Scripts.Main.Systems
 
         private void SetDelay()
         {
-            _ecsWorld.NewEntity().Get<UfoSpawnDelayComponent>() = new UfoSpawnDelayComponent()
+            ref var delayEntity = ref _ufoSystemFilter.GetEntity(0);
+            delayEntity.Get<DelayComponent>() = new DelayComponent()
             {
-                Delay = DateTime.Now.TimeOfDay.Add(TimeSpan.FromSeconds(RuntimeSharedData.GameSettings.UfoSpawnDelay)) 
+                DelayTimer =
+                    DateTime.Now.TimeOfDay.Add(TimeSpan.FromSeconds(RuntimeSharedData.GameSettings.UfoSpawnDelay))
             };
         }
     }

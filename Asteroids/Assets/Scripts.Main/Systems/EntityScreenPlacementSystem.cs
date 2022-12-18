@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Leopotam.Ecs;
+using Scripts.CommonBehaviours;
 using Scripts.CommonExtensions;
 using Scripts.Main.Components;
 using Scripts.Main.Controllers;
@@ -27,6 +28,9 @@ namespace Scripts.Main.Systems
 
         public void Run()
         {
+            if (IPauseBehaviour.IsPaused)
+                return;
+            
             ref var screenBounds = ref _getScreenBounds.ScreenBounds;
 
             foreach (var i in _placementFilter)

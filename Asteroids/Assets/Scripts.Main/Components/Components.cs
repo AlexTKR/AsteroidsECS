@@ -119,9 +119,14 @@ namespace Scripts.Main.Components
     {
     }
 
-    public struct LaserDelayComponent
+    public struct DelayComponent
     {
         public TimeSpan DelayTimer;
+    }
+
+    public struct SetDelayComponent
+    {
+        
     }
 
     public struct LaserActiveComponent
@@ -137,19 +142,25 @@ namespace Scripts.Main.Components
     public struct DiedComponent
     {
     }
-    
-    public struct AsteroidsSpawnDelayComponent
-    {
-        public TimeSpan Delay;
-    }
-    
-    public struct UfoSpawnDelayComponent
-    {
-        public TimeSpan Delay;
-    }
 
     public struct EntityScreenPlacementComponent
     {
         
     }
+
+    public struct RestartGameComponent
+    {
+        
+    }
+
+    public struct UfoSystemComponent
+    {
+        
+    }
+    
+    public struct BigAsteroidSystemComponent
+    {
+        
+    }
+    
 }

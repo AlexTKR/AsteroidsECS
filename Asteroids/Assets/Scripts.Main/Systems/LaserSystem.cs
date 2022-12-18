@@ -1,6 +1,6 @@
 using System;
-using System.Threading.Tasks;
 using Leopotam.Ecs;
+using Scripts.CommonBehaviours;
 using Scripts.CommonExtensions;
 using Scripts.Main.Components;
 using Scripts.Main.Settings;
@@ -13,6 +13,9 @@ namespace Scripts.Main.Systems
 
         public void Run()
         {
+            if (IPauseBehaviour.IsPaused)
+                return;
+
             if (_laserFilter.IsEmpty())
                 return;
 
@@ -32,12 +35,12 @@ namespace Scripts.Main.Systems
                 return;
             }
 
-            if (laserEntity.Has<LaserDelayComponent>())
+            if (laserEntity.Has<DelayComponent>())
             {
-                ref var laserDelayComponent = ref laserEntity.Get<LaserDelayComponent>();
+                ref var laserDelayComponent = ref laserEntity.Get<DelayComponent>();
                 if (DateTime.Now.TimeOfDay >= laserDelayComponent.DelayTimer)
                 {
-                    laserEntity.Del<LaserDelayComponent>();
+                    laserEntity.Del<DelayComponent>();
                     laserComponent.LaserCount = RuntimeSharedData.GameSettings.LaserCount;
                 }
 
@@ -50,13 +53,17 @@ namespace Scripts.Main.Systems
             laserEntity.Del<ShootLaserComponent>();
 
             if (--laserComponent.LaserCount <= 0)
-                laserEntity.Get<LaserDelayComponent>() = new LaserDelayComponent()
-                    { DelayTimer = DateTime.Now.TimeOfDay + TimeSpan.FromSeconds(RuntimeSharedData.GameSettings.LaserDelay) };
+                laserEntity.Get<DelayComponent>() = new DelayComponent()
+                {
+                    DelayTimer = DateTime.Now.TimeOfDay +
+                                 TimeSpan.FromSeconds(RuntimeSharedData.GameSettings.LaserDelay)
+                };
 
             gameObjectComponent.GameObject.SetActiveOptimized(true);
             laserEntity.Get<LaserActiveComponent>() = new LaserActiveComponent()
             {
-                ActiveTimer = DateTime.Now.TimeOfDay + TimeSpan.FromSeconds(RuntimeSharedData.GameSettings.LaserActiveTime) 
+                ActiveTimer = DateTime.Now.TimeOfDay +
+                              TimeSpan.FromSeconds(RuntimeSharedData.GameSettings.LaserActiveTime)
             };
         }
     }

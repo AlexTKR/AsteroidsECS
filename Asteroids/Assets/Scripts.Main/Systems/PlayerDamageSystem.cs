@@ -1,4 +1,5 @@
 using Leopotam.Ecs;
+using Scripts.CommonBehaviours;
 using Scripts.CommonExtensions;
 using Scripts.Main.Components;
 
@@ -10,6 +11,9 @@ namespace Scripts.Main.Systems
 
         public void Run()
         {
+            if (IPauseBehaviour.IsPaused)
+                return;
+            
             if (_playerDamageFilter.IsEmpty())
                 return;
 

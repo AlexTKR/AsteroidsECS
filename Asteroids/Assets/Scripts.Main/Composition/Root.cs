@@ -22,8 +22,6 @@ namespace Scripts.Main.Composition
         private IEntityPool<EcsEntity, SmallAsteroidComponent> _smallAsteroidsEntityPool;
         private IEntityPool<EcsEntity, BulletComponent> _bulletEntityPool;
         private IEntityPool<EcsEntity, UfoComponent> _ufoEntityPool;
-        private IRunner _runner = new Runner();
-        private IRunner _fixedRunner = new Runner();
 
         #region InjectBehaviours
 
@@ -70,13 +68,7 @@ namespace Scripts.Main.Composition
             _runSystems = new EcsSystems(_world);
             _physicsRunSystems = new EcsSystems(_world);
 
-            _runner.SetRunCallBack(() => { _runSystems?.Run(); });
-            _fixedRunner.SetRunCallBack(() => { _physicsRunSystems?.Run(); });
-            _pauser = new Pauser(new[]
-            {
-                (IPauseBehaviour)_runner,
-                (IPauseBehaviour)_fixedRunner
-            });
+            _pauser = new Pauser();
 
             _runSystems.Inject(_loadPlayer)
                 .Inject(_loadBullet)
@@ -105,8 +97,9 @@ namespace Scripts.Main.Composition
                 .Add(new MovementSystem())
                 .Add(new ScreenBoundariesSystem())
                 .Add(new RecyclingSystem())
-                .Add(new UiSystem())
                 .Add(new GameOverSystem())
+                .Add(new RestartGameSystem())
+                .Add(new UiSystem())
                 .Init();
 
             _physicsRunSystems
@@ -116,12 +109,12 @@ namespace Scripts.Main.Composition
 
         private void Update()
         {
-            _runner?.Run();
+            _runSystems?.Run();
         }
 
         private void FixedUpdate()
         {
-            _fixedRunner?.Run();
+            _physicsRunSystems?.Run();
         }
 
         private void OnDestroy()
