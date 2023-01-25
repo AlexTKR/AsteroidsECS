@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using Scripts.Reactive;
 using UnityEngine;
 
 namespace Scripts.CommonExtensions
@@ -14,6 +16,18 @@ namespace Scripts.CommonExtensions
 
             var index = Random.Next(0, values.Length);
             return values[index];
+        }
+        
+        public static void Subscribe<T>(this Component gameObject, IReactiveValue<T> reactiveValue,
+            Action<T> action, ref Action  onDestroy)
+        {
+            void OnChanged(T value)
+            {
+                action?.Invoke(value);
+            }
+
+            reactiveValue.OnChanged += OnChanged;
+            onDestroy += () => { reactiveValue.OnChanged -= OnChanged; };
         }
 
         public static T FirstIfAny<T>(this IList<T> collection)

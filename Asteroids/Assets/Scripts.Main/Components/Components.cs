@@ -1,4 +1,5 @@
 using System;
+using Scripts.Data;
 using UnityEngine;
 
 namespace Scripts.Main.Components
@@ -64,6 +65,11 @@ namespace Scripts.Main.Components
     public struct PlayerComponent
     {
         public Transform ShootTransform;
+    }
+
+    public struct PlayerDataComponent
+    {
+        public PlayerData PlayerData;
     }
 
     public struct AffectedByBoundariesComponent

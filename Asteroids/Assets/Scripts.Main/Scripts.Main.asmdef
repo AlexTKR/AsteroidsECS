@@ -2,8 +2,6 @@
     "name": "Scripts.Main",
     "rootNamespace": "",
     "references": [
-        "GUID:295e7ef62a0c98d4f856390ffbce51f1",
-        "GUID:f1a011ba111d194419f9551097fc47a7",
         "GUID:64cda729e57899e4891f867c24848f59",
         "GUID:e1ba1e1429879a8478db83ffd963861c",
         "GUID:9e24947de15b9834991c9d8411ea37cf",
@@ -11,7 +9,10 @@
         "GUID:75469ad4d38634e559750d17036d5f7c",
         "GUID:24154ae289a73514ea5f2f55770be6f6",
         "GUID:4856768ad70e7994d977dfa2d7343d6a",
-        "GUID:656c2c43d3cfe4855bd40e058874b0be"
+        "GUID:656c2c43d3cfe4855bd40e058874b0be",
+        "GUID:380378689483a1045977ca1232262442",
+        "GUID:98239e98a90af654cbb627ef1f5c7368",
+        "GUID:eab3d102a4bde3247b122862381f7d0a"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

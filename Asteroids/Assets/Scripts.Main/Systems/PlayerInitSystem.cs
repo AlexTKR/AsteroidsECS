@@ -1,5 +1,6 @@
 using Controllers;
 using Leopotam.Ecs;
+using Scripts.Data;
 using Scripts.Main.Components;
 using UnityEngine;
 
@@ -9,11 +10,19 @@ namespace Scripts.Main.Systems
     {
         private EcsWorld _world;
         private ILoadPlayer _loadPlayer;
+        private IDataProvider _dataProvider;
 
         public void Init()
         {
+            var playerDataRepository = new PlayerDataRepository();
+            _dataProvider.Add(playerDataRepository);
             var playerPrefab = _loadPlayer.LoadPLayer().Load(runAsync: false).Result;
             var playerSpawnEntity = _world.NewEntity();
+            playerSpawnEntity.Get<PlayerDataComponent>() = new PlayerDataComponent()
+            {
+                PlayerData = playerDataRepository.Data
+            };
+            
             playerSpawnEntity.Get<SpawnComponent>() = new SpawnComponent()
             {
                 Prefab = playerPrefab.gameObject,

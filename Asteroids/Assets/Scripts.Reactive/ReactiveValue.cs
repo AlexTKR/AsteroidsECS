@@ -2,12 +2,12 @@ using System;
 
 namespace Scripts.Reactive
 {
-    public interface IRaiser<T>
+    public interface IReactor<T>
     {
         event Action<T> OnChanged;
     }
 
-    public interface IReactiveValue<T> : IRaiser<T>
+    public interface IReactiveValue<T> : IReactor<T>
     {
         T Value { get; set; }
     }

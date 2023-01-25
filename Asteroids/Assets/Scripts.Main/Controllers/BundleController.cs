@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Scripts.Main.Entities;
 using Scripts.Main.Settings;
+using Scripts.UI.Canvas;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -76,8 +77,13 @@ namespace Controllers
         ILoadable<GameSettings> LoadGameSettings();
     }
 
+    public interface ILoadCanvas<T>
+    {
+        ILoadable<T> LoadCanvas();
+    }
+
     public class BundleController : ILoadPlayer, ILoadBullet,
-        ILoadAsteroids, ILoadUfo, ILoadGameSettings
+        ILoadAsteroids, ILoadUfo, ILoadGameSettings, ILoadCanvas<MainCanvas>
     {
         private ILoadable<PlayerMonoEntity> _playerMonoEntity;
         private ILoadable<BulletMonoEntity> _bulletMonoEntity;
@@ -85,6 +91,7 @@ namespace Controllers
         private ILoadable<SmallAsteroidMonoEntity> _smallAsteroidsMonoEntity;
         private ILoadable<UfoMonoEntity> _ufoMonoEntity;
         private ILoadable<GameSettings> _loadGameSettings;
+        private ILoadable<MainCanvas> _mainCanvas;
 
         public ILoadable<BigAsteroidMonoEntity> LoadBigAsteroid()
         {
@@ -93,9 +100,10 @@ namespace Controllers
 
         public ILoadable<SmallAsteroidMonoEntity> LoadSmallAsteroid()
         {
-            return _smallAsteroidsMonoEntity ??= new LoadReference<SmallAsteroidMonoEntity, GameObject>("Asteriod_small");
+            return _smallAsteroidsMonoEntity ??=
+                new LoadReference<SmallAsteroidMonoEntity, GameObject>("Asteriod_small");
         }
-        
+
         public ILoadable<PlayerMonoEntity> LoadPLayer()
         {
             return _playerMonoEntity ??= new LoadReference<PlayerMonoEntity, GameObject>("Player");
@@ -114,6 +122,11 @@ namespace Controllers
         public ILoadable<GameSettings> LoadGameSettings()
         {
             return _loadGameSettings ??= new LoadReference<GameSettings, GameSettings>("GameSettings");
+        }
+
+        public ILoadable<MainCanvas> LoadCanvas()
+        {
+            return _mainCanvas ??= new LoadReference<MainCanvas, GameObject>("MainCanvas");
         }
     }
 }

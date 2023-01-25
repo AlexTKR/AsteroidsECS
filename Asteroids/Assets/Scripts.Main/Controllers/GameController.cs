@@ -1,6 +1,5 @@
 using Controllers;
 using Scripts.Main.Settings;
-using Scripts.ViewViewModelBehavior;
 using Zenject;
 
 namespace Scripts.Main.Controllers

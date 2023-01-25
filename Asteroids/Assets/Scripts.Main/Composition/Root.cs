@@ -1,12 +1,13 @@
 using Controllers;
 using Leopotam.Ecs;
 using Scripts.CommonBehaviours;
+using Scripts.Data;
 using Scripts.Main.Components;
 using Scripts.Main.Controllers;
 using Scripts.Main.Converters;
 using Scripts.Main.Pools;
 using Scripts.Main.Systems;
-using Scripts.ViewViewModelBehavior;
+using Scripts.UI.Canvas;
 using UnityEngine;
 using Zenject;
 
@@ -25,12 +26,13 @@ namespace Scripts.Main.Composition
 
         #region InjectBehaviours
 
+        private ILoadCanvas<MainCanvas> _loadMainCanvas;
         private ILoadPlayer _loadPlayer;
         private ILoadBullet _loadBullet;
         private ILoadScene _loadScene;
         private IGetScreenBounds _getScreenBounds;
-        private IMainHubBehavior _mainHubBehavior;
-        private IGameOverPanelBehaviour _gameOverPanelBehaviour;
+        private IViewModelProvider _viewModelProvider;
+        private IDataProvider _dataProvider;
         private IPauseBehaviour _pauser;
 
         #endregion
@@ -38,16 +40,17 @@ namespace Scripts.Main.Composition
         [Inject]
         private void Construct(IInitiator initiator, ILoadPlayer loadPlayer,
             IGetScreenBounds getScreenBounds, ILoadBullet loadBullet,
-            IMainHubBehavior mainHubBehavior, IGameOverPanelBehaviour gameOverPanelBehaviour,
-            ILoadScene loadScene)
+            ILoadScene loadScene, ILoadCanvas<MainCanvas> loadMainCanvas,
+            IViewModelProvider viewModelProvider, IDataProvider dataProvider)
         {
             _initiator = initiator;
             _loadPlayer = loadPlayer;
             _getScreenBounds = getScreenBounds;
             _loadBullet = loadBullet;
-            _mainHubBehavior = mainHubBehavior;
-            _gameOverPanelBehaviour = gameOverPanelBehaviour;
             _loadScene = loadScene;
+            _loadMainCanvas = loadMainCanvas;
+            _viewModelProvider = viewModelProvider;
+            _dataProvider = dataProvider;
         }
 
         private void Start()
@@ -70,7 +73,9 @@ namespace Scripts.Main.Composition
 
             _pauser = new Pauser();
 
-            _runSystems.Inject(_loadPlayer)
+            _runSystems.Inject(_dataProvider)
+                .Inject(_viewModelProvider)
+                .Inject(_loadPlayer)
                 .Inject(_loadBullet)
                 .Inject(_loadScene)
                 .Inject(_bigAsteroidsEntityPool)
@@ -78,19 +83,17 @@ namespace Scripts.Main.Composition
                 .Inject(_bulletEntityPool)
                 .Inject(_ufoEntityPool)
                 .Inject(_getScreenBounds)
-                .Inject(_mainHubBehavior)
-                .Inject(_gameOverPanelBehaviour)
                 .Inject(_pauser)
                 .Add(new PlayerInitSystem())
                 .Add(new ScoreInitSystem())
                 .Add(new PlayerDamageSystem())
                 .Add(new InputSystem())
-                .Add(new LaserSystem())
                 .Add(new BigAsteroidsSpawnSystem())
                 .Add(new SmallAsteroidsSpawnSystem())
                 .Add(new UfoSpawnSystem())
                 .Add(new BulletSystem())
                 .Add(new SpawnSystem())
+                .Add(new LaserSystem())
                 .Add(new EntityScreenPlacementSystem())
                 .Add(new MovementWithInertiaSystem())
                 .Add(new RotationSystem())
@@ -105,6 +108,19 @@ namespace Scripts.Main.Composition
             _physicsRunSystems
                 .Add(new CollisionSystem())
                 .Init();
+
+            InitUI();
+        }
+
+        private void InitUI()
+        {
+            var mainCanvasLoadable = _loadMainCanvas.LoadCanvas().Load(runAsync: false).Result;
+            var mainCanvas = Instantiate(mainCanvasLoadable);
+
+            for (int i = 0; i < mainCanvas.ViewModelConsumers.Length; i++)
+            {
+                mainCanvas.ViewModelConsumers[i].Init(_viewModelProvider);
+            }
         }
 
         private void Update()

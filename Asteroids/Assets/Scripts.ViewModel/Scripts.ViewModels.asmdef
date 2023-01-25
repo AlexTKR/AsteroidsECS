@@ -1,0 +1,22 @@
+{
+    "name": "Scripts.ViewModels",
+    "rootNamespace": "",
+    "references": [
+        "GUID:380378689483a1045977ca1232262442",
+        "GUID:64cda729e57899e4891f867c24848f59",
+        "GUID:4856768ad70e7994d977dfa2d7343d6a",
+        "GUID:98239e98a90af654cbb627ef1f5c7368",
+        "GUID:e1ba1e1429879a8478db83ffd963861c",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:eab3d102a4bde3247b122862381f7d0a"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
