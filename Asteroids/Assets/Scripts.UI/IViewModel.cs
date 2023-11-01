@@ -4,8 +4,7 @@ namespace Scripts.UI
 {
     public interface IViewModel<T>
     {
-        void SetActiveStatus(bool activeStatus);
-        
+        void SetActive(bool activeStatus);
         void Compose(T panel);
     }
 }

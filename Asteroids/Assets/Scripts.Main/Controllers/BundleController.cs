@@ -1,56 +1,19 @@
-using System.Threading.Tasks;
 using Scripts.Main.Entities;
+using Scripts.Main.Loadable;
 using Scripts.Main.Settings;
 using Scripts.UI.Canvas;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
 
-public interface ILoadable<T>
+namespace Scripts.Main.Controllers
 {
-    Task<T> Load(bool autoRelease = true, bool runAsync = true);
-    void Release();
-}
+    #region GameEntities
 
-public class LoadReference<T, TIn> : ILoadable<T>
-{
-    private string _id;
-    private AsyncOperationHandle _handle;
-
-    public LoadReference(string id)
+    public interface ILoadGameEntities : ILoadPlayer,ILoadBullet
+        ,ILoadAsteroids, ILoadUfo
     {
-        _id = id;
+        
     }
-
-    public async Task<T> Load(bool autoRelease = true, bool runAsync = true)
-    {
-        _handle = Addressables.LoadAssetAsync<TIn>(_id);
-
-        if (runAsync)
-            await _handle.Task;
-        else
-            _handle.WaitForCompletion();
-
-        var result = typeof(TIn) == typeof(GameObject)
-            ? ((GameObject)_handle.Result).GetComponent<T>()
-            : (T)_handle.Result;
-
-        if (autoRelease)
-        {
-            Release();
-        }
-
-        return result;
-    }
-
-    public void Release()
-    {
-        Addressables.Release(_handle);
-    }
-}
-
-namespace Controllers
-{
+    
     public interface ILoadPlayer
     {
         ILoadable<PlayerMonoEntity> LoadPLayer();
@@ -72,9 +35,22 @@ namespace Controllers
         ILoadable<UfoMonoEntity> LoadUfo();
     }
 
+    #endregion
+
+    #region GameSettings
+
     public interface ILoadGameSettings
     {
         ILoadable<GameSettings> LoadGameSettings();
+    }
+
+    #endregion
+
+    #region View
+
+    public interface ILoadView : ILoadCanvas<MainCanvas>
+    {
+        
     }
 
     public interface ILoadCanvas<T>
@@ -82,8 +58,9 @@ namespace Controllers
         ILoadable<T> LoadCanvas();
     }
 
-    public class BundleController : ILoadPlayer, ILoadBullet,
-        ILoadAsteroids, ILoadUfo, ILoadGameSettings, ILoadCanvas<MainCanvas>
+    #endregion
+
+    public class BundleController : ILoadGameEntities, ILoadGameSettings, ILoadView
     {
         private ILoadable<PlayerMonoEntity> _playerMonoEntity;
         private ILoadable<BulletMonoEntity> _bulletMonoEntity;
@@ -93,40 +70,51 @@ namespace Controllers
         private ILoadable<GameSettings> _loadGameSettings;
         private ILoadable<MainCanvas> _mainCanvas;
 
+        #region LoadableIds
+        
+        private const string AsteroidBigId = "Asteriod_big";
+        private const string AsteroidSmallId = "Asteriod_small";
+        private const string PlayerId = "Player";
+        private const string BulletId = "Bullet";
+        private const string UfoId = "Ufo";
+        private const string GameSettingsId = "GameSettings";
+        private const string MainCanvasId = "MainCanvas";
+        
+        #endregion
+
         public ILoadable<BigAsteroidMonoEntity> LoadBigAsteroid()
         {
-            return _bigAsteroidsMonoEntity ??= new LoadReference<BigAsteroidMonoEntity, GameObject>("Asteriod_big");
+            return _bigAsteroidsMonoEntity ??= new LoadReference<BigAsteroidMonoEntity, GameObject>(AsteroidBigId);
         }
 
         public ILoadable<SmallAsteroidMonoEntity> LoadSmallAsteroid()
         {
-            return _smallAsteroidsMonoEntity ??=
-                new LoadReference<SmallAsteroidMonoEntity, GameObject>("Asteriod_small");
+            return _smallAsteroidsMonoEntity ??= new LoadReference<SmallAsteroidMonoEntity, GameObject>(AsteroidSmallId);
         }
 
         public ILoadable<PlayerMonoEntity> LoadPLayer()
         {
-            return _playerMonoEntity ??= new LoadReference<PlayerMonoEntity, GameObject>("Player");
+            return _playerMonoEntity ??= new LoadReference<PlayerMonoEntity, GameObject>(PlayerId);
         }
 
         public ILoadable<BulletMonoEntity> LoadBullet()
         {
-            return _bulletMonoEntity ??= new LoadReference<BulletMonoEntity, GameObject>("Bullet");
+            return _bulletMonoEntity ??= new LoadReference<BulletMonoEntity, GameObject>(BulletId);
         }
 
         public ILoadable<UfoMonoEntity> LoadUfo()
         {
-            return _ufoMonoEntity ??= new LoadReference<UfoMonoEntity, GameObject>("Ufo");
+            return _ufoMonoEntity ??= new LoadReference<UfoMonoEntity, GameObject>(UfoId);
         }
 
         public ILoadable<GameSettings> LoadGameSettings()
         {
-            return _loadGameSettings ??= new LoadReference<GameSettings, GameSettings>("GameSettings");
+            return _loadGameSettings ??= new LoadReference<GameSettings, GameSettings>(GameSettingsId);
         }
 
         public ILoadable<MainCanvas> LoadCanvas()
         {
-            return _mainCanvas ??= new LoadReference<MainCanvas, GameObject>("MainCanvas");
+            return _mainCanvas ??= new LoadReference<MainCanvas, GameObject>(MainCanvasId);
         }
     }
 }

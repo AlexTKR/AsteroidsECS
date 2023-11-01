@@ -1,7 +1,7 @@
-using Controllers;
 using Leopotam.Ecs;
 using Scripts.CommonExtensions;
 using Scripts.Main.Components;
+using Scripts.Main.Controllers;
 using Scripts.Main.Pools;
 using UnityEngine;
 
@@ -15,12 +15,14 @@ namespace Scripts.Main.Systems
         private EcsWorld _ecsWorld;
 
         private ILoadBullet _loadBullet;
+        private EntityPoolProvider _poolProvider;
         private IEntityPool<EcsEntity, BulletComponent> _bulletEntityPool;
         private GameObject _bulletPrefab;
         private Transform _parent;
 
         public void Init()
         {
+            _bulletEntityPool = _poolProvider.Get<IEntityPool<EcsEntity, BulletComponent>>();
             _bulletPrefab = _loadBullet.LoadBullet().Load(runAsync: false).Result.gameObject;
             _parent = new GameObject("BulletHolder").transform;
         }

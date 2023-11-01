@@ -10,7 +10,8 @@ namespace Scripts.DI
         {
             Container.BindInterfacesAndSelfTo(typeof(MainHudViewModel)).AsSingle().NonLazy();
             Container.BindInterfacesAndSelfTo(typeof(GameOverViewModel)).AsSingle().NonLazy();
-            Container.Bind<IViewModelProvider>().To<ViewModelProvider>().AsSingle().NonLazy();
+            
+            Container.Bind<ViewModelProvider>().AsSingle().NonLazy();
         }
     }
 }

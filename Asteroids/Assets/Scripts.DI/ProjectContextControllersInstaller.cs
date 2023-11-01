@@ -1,4 +1,3 @@
-using Controllers;
 using Scripts.Main.Controllers;
 using Zenject;
 
@@ -9,7 +8,7 @@ namespace Scripts.DI
         public override void InstallBindings()
         {
             Container.BindInterfacesAndSelfTo<GameController>().AsSingle().NonLazy();
-            Container.BindInterfacesAndSelfTo<SceneController>().AsSingle().NonLazy();
+            Container.BindInterfacesAndSelfTo<SceneLoaderController>().AsSingle().NonLazy();
             Container.BindInterfacesAndSelfTo<BundleController>().AsSingle().NonLazy();
         }
     }

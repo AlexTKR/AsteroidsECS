@@ -12,16 +12,16 @@ namespace Scripts.Main.Systems
         private EcsWorld _ecsWorld;
 
         private PlayerInputActions _inputActions;
-        private bool shootBulletsButtonPressed;
-        private bool shootLaserButtonPressed;
+        private bool _shootBulletsButtonPressed;
+        private bool _shootLaserButtonPressed;
 
         public void Init()
         {
             _inputActions = new PlayerInputActions();
             _inputActions.PlayerMap.Enable();
-            _inputActions.PlayerMap.ShootingBullets.performed += context => { shootBulletsButtonPressed = true; };
+            _inputActions.PlayerMap.ShootingBullets.performed += context => { _shootBulletsButtonPressed = true; };
 
-            _inputActions.PlayerMap.ShootingLaser.performed += context => { shootLaserButtonPressed = true; };
+            _inputActions.PlayerMap.ShootingLaser.performed += context => { _shootLaserButtonPressed = true; };
         }
 
         public void Run()
@@ -34,16 +34,16 @@ namespace Scripts.Main.Systems
             ProcessPlayerMovementInput(ref movementInput);
 
 
-            if (shootBulletsButtonPressed)
+            if (_shootBulletsButtonPressed)
             {
-                shootBulletsButtonPressed = false;
+                _shootBulletsButtonPressed = false;
                 _ecsWorld.NewEntity().Get<ShootBulletComponent>();
                 return;
             }
 
-            if (shootLaserButtonPressed)
+            if (_shootLaserButtonPressed)
             {
-                shootLaserButtonPressed = false;
+                _shootLaserButtonPressed = false;
                 ref var laserEntity = ref _laserFilter.GetEntity(0);
                 laserEntity.Get<ShootLaserComponent>();
             }

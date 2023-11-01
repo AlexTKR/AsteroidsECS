@@ -5,7 +5,7 @@ using Zenject;
 
 namespace Scripts.ViewModel
 {
-    public class ViewModelProvider : Provider, IViewModelProvider
+    public class ViewModelProvider : ByTypeProvider
     {
         [Inject]
         private void Construct(IViewModel<MainHudPanel> mainHudViewModel,

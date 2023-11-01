@@ -1,8 +1,8 @@
 using System;
-using Controllers;
 using Leopotam.Ecs;
 using Scripts.CommonBehaviours;
 using Scripts.Main.Components;
+using Scripts.Main.Controllers;
 using Scripts.Main.Pools;
 using Scripts.Main.Settings;
 using UnityEngine;
@@ -15,6 +15,7 @@ namespace Scripts.Main.Systems
         private EcsFilter<BigAsteroidSystemComponent> _bigAsteroidSystemFilter;
         private EcsFilter<BigAsteroidSystemComponent, DelayComponent> _delayFilter;
         private EcsFilter<BigAsteroidSystemComponent, SetDelayComponent> _setDelayFilter;
+        private EntityPoolProvider _poolProvider;
         private IEntityPool<EcsEntity, BigAsteroidComponent> _bigAsteroidsEntityPool;
         private ILoadAsteroids _loadAsteroids;
         private GameObject _bigAsteroidMonoEntityPrefab;
@@ -22,6 +23,7 @@ namespace Scripts.Main.Systems
 
         public void Init()
         {
+            _bigAsteroidsEntityPool = _poolProvider.Get<IEntityPool<EcsEntity, BigAsteroidComponent>>();
             var asteroidSystemEntity = _ecsWorld.NewEntity();
             asteroidSystemEntity.Get<BigAsteroidSystemComponent>();
             asteroidSystemEntity.Get<SetDelayComponent>();
@@ -54,26 +56,27 @@ namespace Scripts.Main.Systems
 
                 return;
             }
+            
+            SetDelay();
 
             if (_bigAsteroidsEntityPool.EntityCount > 0)
             {
                 ref var pooledEntity = ref _bigAsteroidsEntityPool.Get();
                 pooledEntity.Get<EntityScreenPlacementComponent>();
+                return;
             }
-            else
+            
+            
+            var spawnEntity = _ecsWorld.NewEntity();
+            spawnEntity.Get<SpawnComponent>() = new SpawnComponent()
             {
-                var spawnEntity = _ecsWorld.NewEntity();
-                spawnEntity.Get<SpawnComponent>() = new SpawnComponent()
-                {
-                    Prefab = _bigAsteroidMonoEntityPrefab,
-                    Position = Vector3.zero,
-                    Rotation = Quaternion.identity,
-                    Parent = _parent
-                };
-                spawnEntity.Get<EntityScreenPlacementComponent>();
-            }
-
-            SetDelay();
+                Prefab = _bigAsteroidMonoEntityPrefab,
+                Position = Vector3.zero,
+                Rotation = Quaternion.identity,
+                Parent = _parent
+            };
+                
+            spawnEntity.Get<EntityScreenPlacementComponent>();
         }
 
         private void SetDelay()

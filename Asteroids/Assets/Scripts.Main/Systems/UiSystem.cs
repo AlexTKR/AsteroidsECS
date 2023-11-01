@@ -5,14 +5,15 @@ using Scripts.Main.Components;
 using Scripts.Main.Controllers;
 using Scripts.UI;
 using Scripts.UI.Panels;
+using Scripts.ViewModel;
 
 namespace Scripts.Main.Systems
 {
     public class UiSystem : IEcsRunSystem, IEcsInitSystem
     {
-        private IViewModelProvider _viewModelProvider;
+        private ViewModelProvider _viewModelProvider;
         private IViewModel<GameOverPanel> _gameOverViewModel;
-        private ILoadScene _loadScene;
+        private ISceneLoader _sceneLoader;
         private EcsWorld _ecsWorld;
 
         private EcsFilter<PlayerComponent, MovableWithInertiaComponent,
@@ -41,7 +42,7 @@ namespace Scripts.Main.Systems
 
         private void HandlePlayerMovementOutput()
         {
-            if (IPauseBehaviour.IsPaused || _playerFilter.IsEmpty())
+            if (IPauseBehaviour.IsPaused)
                 return;
 
             ref var movableWithInertiaComponent = ref _playerFilter.Get2(0);
@@ -58,7 +59,7 @@ namespace Scripts.Main.Systems
             ref var playerDiedEntity = ref _playerDiedFilter.GetEntity(0);
             playerDiedEntity.Del<DiedComponent>();
 
-            _gameOverViewModel.SetActiveStatus(true);
+            _gameOverViewModel.SetActive(true);
         }
     }
 }

@@ -2,7 +2,7 @@ namespace Scripts.Data
 {
     public interface IInitData
     {
-        void Init(); //Provide data source here, for instance db source or server
+        void Init(); 
     }
 
     public interface IDataRepository<T> : IInitData

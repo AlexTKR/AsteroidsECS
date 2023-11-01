@@ -23,7 +23,7 @@ namespace Scripts.Main.Systems
         private EcsFilter<EntityScreenPlacementComponent, TransformComponent,
             GameObjectComponent, MovableComponent, SpriteRendererComponent> _placementFilter;
 
-        private IGetScreenBounds _getScreenBounds;
+        private IScreenBoundsProvider _screenBoundsProvider;
 
 
         public void Run()
@@ -31,7 +31,7 @@ namespace Scripts.Main.Systems
             if (IPauseBehaviour.IsPaused)
                 return;
             
-            ref var screenBounds = ref _getScreenBounds.ScreenBounds;
+            ref var screenBounds = ref _screenBoundsProvider.ScreenBounds;
 
             foreach (var i in _placementFilter)
             {

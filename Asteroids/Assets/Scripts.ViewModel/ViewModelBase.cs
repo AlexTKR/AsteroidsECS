@@ -8,7 +8,7 @@ namespace Scripts.ViewModel
     {
         protected T panel;
         
-        public virtual void SetActiveStatus(bool activeStatus)
+        public virtual void SetActive(bool activeStatus)
         {
             panel.gameObject.SetActiveOptimized(activeStatus);
         }

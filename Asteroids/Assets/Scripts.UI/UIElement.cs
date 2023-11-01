@@ -4,11 +4,11 @@ using UnityEngine;
 
 namespace Scripts.UI
 {
-    public class UIElement : MonoBehaviour
+    public class UIElement : MonoBehaviour 
     {
         public Action OnRenderAction;
 
-        public virtual void SetActiveStatus(bool status)
+        public virtual void SetActive(bool status)
         {
             gameObject.SetActiveOptimized(status);
         }

@@ -4,12 +4,12 @@ using Zenject;
 
 namespace Scripts.Main.Controllers
 {
-    public interface IGetScreenBounds
+    public interface IScreenBoundsProvider
     {
         ref Vector2 ScreenBounds { get; }
     }
 
-    public class CameraController : ControllersBase, IGetScreenBounds
+    public class CameraController : ControllersBase, IScreenBoundsProvider
     {
         private MainCamera _mainCamera;
         private Vector2 _screenBounds;

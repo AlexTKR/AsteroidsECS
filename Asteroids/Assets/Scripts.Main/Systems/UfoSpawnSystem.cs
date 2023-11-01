@@ -1,8 +1,8 @@
 using System;
-using Controllers;
 using Leopotam.Ecs;
 using Scripts.CommonBehaviours;
 using Scripts.Main.Components;
+using Scripts.Main.Controllers;
 using Scripts.Main.Pools;
 using Scripts.Main.Settings;
 using UnityEngine;
@@ -16,6 +16,7 @@ namespace Scripts.Main.Systems
         private EcsFilter<UfoSystemComponent, DelayComponent> _delayFilter;
         private EcsFilter<UfoSystemComponent, SetDelayComponent> _setDelayFilter;
         private EcsFilter<PlayerComponent, TransformComponent> _playerFilter;
+        private EntityPoolProvider _poolProvider;
         private IEntityPool<EcsEntity, UfoComponent> _ufoEntityPool;
         private ILoadUfo _loadUfo;
         private GameObject _ufoMonoEntityPrefab;
@@ -23,6 +24,7 @@ namespace Scripts.Main.Systems
 
         public void Init()
         {
+            _ufoEntityPool = _poolProvider.Get<IEntityPool<EcsEntity, UfoComponent>>();
             var ufoSystemEntity = _ecsWorld.NewEntity();
             ufoSystemEntity.Get<UfoSystemComponent>();
             ufoSystemEntity.Get<SetDelayComponent>();
@@ -65,30 +67,29 @@ namespace Scripts.Main.Systems
 
                 return;
             }
+            
+            SetDelay();
 
             if (_ufoEntityPool.EntityCount > 0)
             {
                 ref var pooledEntity = ref _ufoEntityPool.Get();
                 pooledEntity.Get<EntityScreenPlacementComponent>();
+                return;
             }
-            else
+            
+            var spawnEntity = _ecsWorld.NewEntity();
+            spawnEntity.Get<FollowTargetComponent>() = new FollowTargetComponent()
             {
-                var spawnEntity = _ecsWorld.NewEntity();
-                spawnEntity.Get<FollowTargetComponent>() = new FollowTargetComponent()
-                {
-                    Target = playerTransformComponent.Transform
-                };
-                spawnEntity.Get<SpawnComponent>() = new SpawnComponent()
-                {
-                    Prefab = _ufoMonoEntityPrefab,
-                    Position = Vector3.zero,
-                    Rotation = Quaternion.identity,
-                    Parent = _parent
-                };
-                spawnEntity.Get<EntityScreenPlacementComponent>();
-            }
-
-            SetDelay();
+                Target = playerTransformComponent.Transform
+            };
+            spawnEntity.Get<SpawnComponent>() = new SpawnComponent()
+            {
+                Prefab = _ufoMonoEntityPrefab,
+                Position = Vector3.zero,
+                Rotation = Quaternion.identity,
+                Parent = _parent
+            };
+            spawnEntity.Get<EntityScreenPlacementComponent>();
         }
 
 

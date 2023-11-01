@@ -9,7 +9,7 @@ namespace Scripts.Main.Systems
 {
     public class ScreenBoundariesSystem : IEcsRunSystem
     {
-        private IGetScreenBounds _getScreenBounds;
+        private IScreenBoundsProvider _screenBoundsProvider;
 
         private EcsFilter<AffectedByBoundariesComponent, TransformComponent, SpriteRendererComponent,
             GameObjectComponent> _boundariesFilter;
@@ -19,7 +19,7 @@ namespace Scripts.Main.Systems
             if (IPauseBehaviour.IsPaused)
                 return;
             
-            ref var screenBounds = ref _getScreenBounds.ScreenBounds;
+            ref var screenBounds = ref _screenBoundsProvider.ScreenBounds;
 
             foreach (var i in _boundariesFilter)
             {

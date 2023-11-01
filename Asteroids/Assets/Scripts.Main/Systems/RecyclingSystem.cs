@@ -5,15 +5,23 @@ using Scripts.Main.Pools;
 
 namespace Scripts.Main.Systems
 {
-    public class RecyclingSystem : IEcsRunSystem
+    public class RecyclingSystem : IEcsRunSystem, IEcsInitSystem
     {
         private EcsFilter<RecyclingComponent, GameObjectComponent> _recyclingFilter;
-
+        private EntityPoolProvider _poolProvider;
         private IEntityPool<EcsEntity, BigAsteroidComponent> _bigAsteroidsEntityPool;
         private IEntityPool<EcsEntity, SmallAsteroidComponent> _smallAsteroidsEntityPool;
         private IEntityPool<EcsEntity, BulletComponent> _bulletEntityPool;
         private IEntityPool<EcsEntity, UfoComponent> _ufoEntityPool;
 
+        public void Init()
+        {
+            _bigAsteroidsEntityPool = _poolProvider.Get<IEntityPool<EcsEntity, BigAsteroidComponent>>();
+            _smallAsteroidsEntityPool = _poolProvider.Get<IEntityPool<EcsEntity, SmallAsteroidComponent>>();
+            _bulletEntityPool = _poolProvider.Get<IEntityPool<EcsEntity, BulletComponent>>();
+            _ufoEntityPool = _poolProvider.Get<IEntityPool<EcsEntity, UfoComponent>>();
+        }
+        
         public void Run()
         {
             foreach (var i in _recyclingFilter)

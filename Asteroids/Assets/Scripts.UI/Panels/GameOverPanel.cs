@@ -11,7 +11,7 @@ namespace Scripts.UI.Panels
 
         private IViewModel<GameOverPanel> _viewModel;
 
-        public override void Init(IViewModelProvider viewModelProvider)
+        public override void Init(ByTypeProvider viewModelProvider)
         {
             _viewModel = viewModelProvider.Get<IViewModel<GameOverPanel>>();
             _viewModel.Compose(this);

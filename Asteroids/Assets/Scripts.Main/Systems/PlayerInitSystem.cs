@@ -1,7 +1,7 @@
-using Controllers;
 using Leopotam.Ecs;
 using Scripts.Data;
 using Scripts.Main.Components;
+using Scripts.Main.Controllers;
 using UnityEngine;
 
 namespace Scripts.Main.Systems

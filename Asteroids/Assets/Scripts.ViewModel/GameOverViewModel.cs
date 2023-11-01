@@ -24,7 +24,7 @@ namespace Scripts.ViewModel
             panel.RestartButton.onClick.AddListener(() =>
             {
                 EventProcessor.Get<RestartGameEvent>().Publish();
-                base.panel.SetActiveStatus(false);
+                panel.SetActive(false);
             });
         }
     }

@@ -1,7 +1,7 @@
-using Controllers;
 using Leopotam.Ecs;
 using Scripts.CommonBehaviours;
 using Scripts.Main.Components;
+using Scripts.Main.Controllers;
 using Scripts.Main.Pools;
 using Scripts.Main.Settings;
 using UnityEngine;
@@ -12,6 +12,7 @@ namespace Scripts.Main.Systems
     {
         private EcsWorld _ecsWorld;
         private EcsFilter<BigAsteroidComponent, DamageComponent, TransformComponent, MovableComponent> _asteroidsFilter;
+        private EntityPoolProvider _poolProvider;
         private IEntityPool<EcsEntity, SmallAsteroidComponent> _smallAsteroidsEntityPool;
         private ILoadAsteroids _loadAsteroids;
         private GameObject _smallAsteroidMonoEntityPrefab;
@@ -19,6 +20,7 @@ namespace Scripts.Main.Systems
 
         public void Init()
         {
+            _smallAsteroidsEntityPool = _poolProvider.Get<IEntityPool<EcsEntity, SmallAsteroidComponent>>();
             _parent = new GameObject("SmallAsteroidsHolder").transform;
             _smallAsteroidMonoEntityPrefab = _loadAsteroids.LoadSmallAsteroid().Load(runAsync: false).Result.gameObject;
         }
@@ -50,25 +52,24 @@ namespace Scripts.Main.Systems
                         var smallAsteroidTransform = smallAsteroidTransformComponent.Transform;
                         smallAsteroidTransform.position = bigAsteroidTransform.position;
                         pooledEntity.Get<EntityScreenPlacementComponent>();
+                        continue;
                     }
-                    else
+                    
+                    var spawnEntity = _ecsWorld.NewEntity();
+                    spawnEntity.Get<MovableComponent>() = new MovableComponent()
                     {
-                        var spawnEntity = _ecsWorld.NewEntity();
-                        spawnEntity.Get<MovableComponent>() = new MovableComponent()
-                        {
-                            Direction = moveDirection
-                        };
-                        spawnEntity.Get<SpawnComponent>() = new SpawnComponent()
-                        {
-                            Prefab = _smallAsteroidMonoEntityPrefab,
-                            Position = bigAsteroidTransform.position,
-                            Rotation = bigAsteroidTransform.rotation,
-                            Parent = _parent,
-                            IsActive = true
-                        };
+                        Direction = moveDirection
+                    };
+                    spawnEntity.Get<SpawnComponent>() = new SpawnComponent()
+                    {
+                        Prefab = _smallAsteroidMonoEntityPrefab,
+                        Position = bigAsteroidTransform.position,
+                        Rotation = bigAsteroidTransform.rotation,
+                        Parent = _parent,
+                        IsActive = true
+                    };
 
-                        spawnEntity.Get<EntityScreenPlacementComponent>();
-                    }
+                    spawnEntity.Get<EntityScreenPlacementComponent>();
                 }
             }
         }

@@ -9,6 +9,7 @@ namespace Scripts.Main.Pools
     {
         private T[] _pooled;
         private int _entityCount;
+        private float _resizeMult = 0.5f;
 
         public SimpleEntityPool()
         {
@@ -27,7 +28,7 @@ namespace Scripts.Main.Pools
         public void Return(ref T entity)
         {
             if(_entityCount >= _pooled.Length)
-                Array.Resize(ref _pooled, (int)(_pooled.Length + _pooled.Length * 0.5));
+                Array.Resize(ref _pooled, (int)(_pooled.Length + _pooled.Length * _resizeMult));
             
             _pooled[_entityCount] = entity;
             _entityCount++;

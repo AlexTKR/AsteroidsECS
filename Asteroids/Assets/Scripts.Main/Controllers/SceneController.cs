@@ -2,12 +2,12 @@ using UnityEngine.SceneManagement;
 
 namespace Scripts.Main.Controllers
 {
-    public interface ILoadScene
+    public interface ISceneLoader
     {
         void LoadScene(int sceneId);
     }
 
-    public class SceneController : ControllersBase ,ILoadScene
+    public class SceneLoaderController : ControllersBase , ISceneLoader
     {
         public void LoadScene(int targetIndex)
         {

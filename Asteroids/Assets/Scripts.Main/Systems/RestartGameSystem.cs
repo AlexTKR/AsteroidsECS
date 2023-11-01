@@ -30,7 +30,7 @@ namespace Scripts.Main.Systems
 
             ResetMovableEntities();
             ResetGameScore();
-            Resetplayer();
+            ResetPlayer();
             ResetDelays();
             ResetLaser();
             IPauseBehaviour.IsPaused = false;
@@ -64,7 +64,7 @@ namespace Scripts.Main.Systems
             }
         }
 
-        private void Resetplayer()
+        private void ResetPlayer()
         {
             ref var playerGameObjectComponent = ref _playerFilter.Get2(0);
             ref var transformComponent = ref _playerFilter.Get3(0);

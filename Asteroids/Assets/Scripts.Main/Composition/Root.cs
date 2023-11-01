@@ -1,4 +1,3 @@
-using Controllers;
 using Leopotam.Ecs;
 using Scripts.CommonBehaviours;
 using Scripts.Data;
@@ -7,7 +6,7 @@ using Scripts.Main.Controllers;
 using Scripts.Main.Converters;
 using Scripts.Main.Pools;
 using Scripts.Main.Systems;
-using Scripts.UI.Canvas;
+using Scripts.ViewModel;
 using UnityEngine;
 using Zenject;
 
@@ -19,51 +18,39 @@ namespace Scripts.Main.Composition
         private EcsSystems _physicsRunSystems;
         private EcsWorld _world;
         private IInitiator _initiator;
-        private IEntityPool<EcsEntity, BigAsteroidComponent> _bigAsteroidsEntityPool;
-        private IEntityPool<EcsEntity, SmallAsteroidComponent> _smallAsteroidsEntityPool;
-        private IEntityPool<EcsEntity, BulletComponent> _bulletEntityPool;
-        private IEntityPool<EcsEntity, UfoComponent> _ufoEntityPool;
 
-        #region InjectBehaviours
-
-        private ILoadCanvas<MainCanvas> _loadMainCanvas;
-        private ILoadPlayer _loadPlayer;
-        private ILoadBullet _loadBullet;
-        private ILoadScene _loadScene;
-        private IGetScreenBounds _getScreenBounds;
-        private IViewModelProvider _viewModelProvider;
+        private ILoadGameEntities _loadGameEntities;
+        private ILoadView _loadView;
+        private ISceneLoader _sceneLoader;
+        private IScreenBoundsProvider _screenBoundsProvider;
         private IDataProvider _dataProvider;
         private IPauseBehaviour _pauser;
-
-        #endregion
+        private ViewModelProvider _viewModelProvider;
+        private EntityPoolProvider _entityPoolProvider;
+        
 
         [Inject]
-        private void Construct(IInitiator initiator, ILoadPlayer loadPlayer,
-            IGetScreenBounds getScreenBounds, ILoadBullet loadBullet,
-            ILoadScene loadScene, ILoadCanvas<MainCanvas> loadMainCanvas,
-            IViewModelProvider viewModelProvider, IDataProvider dataProvider)
+        private void Construct(IInitiator initiator, IScreenBoundsProvider screenBoundsProvider,
+            ISceneLoader sceneLoader, IDataProvider dataProvider, ILoadGameEntities loadGameEntities, 
+            ILoadView loadView, ViewModelProvider viewModelProvider, EntityPoolProvider entityPoolProvider)
         {
             _initiator = initiator;
-            _loadPlayer = loadPlayer;
-            _getScreenBounds = getScreenBounds;
-            _loadBullet = loadBullet;
-            _loadScene = loadScene;
-            _loadMainCanvas = loadMainCanvas;
+            _screenBoundsProvider = screenBoundsProvider;
+            _sceneLoader = sceneLoader;
             _viewModelProvider = viewModelProvider;
             _dataProvider = dataProvider;
+            _loadGameEntities = loadGameEntities;
+            _loadView = loadView;
+            _entityPoolProvider = entityPoolProvider;
         }
 
         private void Start()
         {
-            Init();
+            Initiate();
         }
 
-        private void Init()
+        private void Initiate() 
         {
-            _bigAsteroidsEntityPool = new SimpleEntityPool<EcsEntity, BigAsteroidComponent>();
-            _smallAsteroidsEntityPool = new SimpleEntityPool<EcsEntity, SmallAsteroidComponent>();
-            _bulletEntityPool = new SimpleEntityPool<EcsEntity, BulletComponent>();
-            _ufoEntityPool = new SimpleEntityPool<EcsEntity, UfoComponent>();
             _initiator.PreInit();
             _initiator.Init();
 
@@ -73,16 +60,14 @@ namespace Scripts.Main.Composition
 
             _pauser = new Pauser();
 
-            _runSystems.Inject(_dataProvider)
+            _runSystems
+                .Inject(_dataProvider)
                 .Inject(_viewModelProvider)
-                .Inject(_loadPlayer)
-                .Inject(_loadBullet)
-                .Inject(_loadScene)
-                .Inject(_bigAsteroidsEntityPool)
-                .Inject(_smallAsteroidsEntityPool)
-                .Inject(_bulletEntityPool)
-                .Inject(_ufoEntityPool)
-                .Inject(_getScreenBounds)
+                .Inject(_sceneLoader)
+                .Inject(_entityPoolProvider)
+                .Inject(_screenBoundsProvider)
+                .Inject(_loadGameEntities)
+                .Inject(_loadView)
                 .Inject(_pauser)
                 .Add(new PlayerInitSystem())
                 .Add(new ScoreInitSystem())
@@ -109,18 +94,14 @@ namespace Scripts.Main.Composition
                 .Add(new CollisionSystem())
                 .Init();
 
-            InitUI();
+            InitiateViews();
         }
 
-        private void InitUI()
+        private void InitiateViews()
         {
-            var mainCanvasLoadable = _loadMainCanvas.LoadCanvas().Load(runAsync: false).Result;
+            var mainCanvasLoadable = _loadView.LoadCanvas().Load(runAsync: false).Result;
             var mainCanvas = Instantiate(mainCanvasLoadable);
-
-            for (int i = 0; i < mainCanvas.ViewModelConsumers.Length; i++)
-            {
-                mainCanvas.ViewModelConsumers[i].Init(_viewModelProvider);
-            }
+            mainCanvas.InitiateViewModels(_viewModelProvider);
         }
 
         private void Update()

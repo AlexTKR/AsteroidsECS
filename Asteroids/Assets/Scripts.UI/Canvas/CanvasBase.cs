@@ -1,9 +1,18 @@
+using Scripts.CommonBehaviours;
 using UnityEngine;
 
 namespace Scripts.UI.Canvas
 {
-    public class CanvasBase : MonoBehaviour
+    public abstract class CanvasBase : MonoBehaviour
     {
-        public ViewModelConsumer[] ViewModelConsumers;
+        [SerializeField] private ViewModelConsumer[] _viewModelConsumers;
+
+        public virtual void InitiateViewModels(ByTypeProvider viewModelProvider)
+        {
+            for (int i = 0; i < _viewModelConsumers.Length; i++)
+            {
+                _viewModelConsumers[i].Init(viewModelProvider);
+            }
+        }
     }
 }
