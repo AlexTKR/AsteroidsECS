@@ -1,3 +1,4 @@
+using System;
 using Scripts.Main.Entities;
 using Scripts.Main.Loadable;
 using Scripts.Main.Settings;
@@ -55,7 +56,7 @@ namespace Scripts.Main.Controllers
 
     public interface ILoadCanvas<T>
     {
-        ILoadable<T> LoadCanvas();
+        ILoadable<T> LoadCanvas(Type type);
     }
 
     #endregion
@@ -112,9 +113,12 @@ namespace Scripts.Main.Controllers
             return _loadGameSettings ??= new LoadReference<GameSettings, GameSettings>(GameSettingsId);
         }
 
-        public ILoadable<MainCanvas> LoadCanvas()
+        public ILoadable<MainCanvas> LoadCanvas(Type type)
         {
-            return _mainCanvas ??= new LoadReference<MainCanvas, GameObject>(MainCanvasId);
+            if (type == typeof(MainCanvas))
+                return _mainCanvas ??= new LoadReference<MainCanvas, GameObject>(MainCanvasId);
+
+            return default;
         }
     }
 }

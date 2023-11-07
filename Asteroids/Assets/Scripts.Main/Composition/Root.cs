@@ -6,6 +6,7 @@ using Scripts.Main.Controllers;
 using Scripts.Main.Converters;
 using Scripts.Main.Pools;
 using Scripts.Main.Systems;
+using Scripts.UI.Canvas;
 using Scripts.ViewModel;
 using UnityEngine;
 using Zenject;
@@ -99,7 +100,7 @@ namespace Scripts.Main.Composition
 
         private void InitiateViews()
         {
-            var mainCanvasLoadable = _loadView.LoadCanvas().Load(runAsync: false).Result;
+            var mainCanvasLoadable = _loadView.LoadCanvas(typeof(MainCanvas)).Load(runAsync: false).Result;
             var mainCanvas = Instantiate(mainCanvasLoadable);
             mainCanvas.InitiateViewModels(_viewModelProvider);
         }
