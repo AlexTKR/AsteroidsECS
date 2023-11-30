@@ -1,3 +1,4 @@
+using Scripts.Main.Loader;
 using Scripts.Main.Settings;
 using Zenject;
 

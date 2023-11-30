@@ -1,7 +1,5 @@
 using Leopotam.Ecs;
-using Scripts.CommonBehaviours;
 using Scripts.Main.Components;
-using Scripts.Main.Converters;
 using UnityEngine;
 
 namespace Scripts.Main.Systems
@@ -12,9 +10,6 @@ namespace Scripts.Main.Systems
 
         public void Run()
         {
-            if (IPauseBehaviour.IsPaused)
-                return;
-
             foreach (var i in _movableFilter)
             {
                 ref var entity = ref _movableFilter.GetEntity(i);

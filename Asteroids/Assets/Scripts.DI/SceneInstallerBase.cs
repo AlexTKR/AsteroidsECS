@@ -1,5 +1,4 @@
-using Scripts.CommonBehaviours;
-using UnityEngine;
+using Scripts.Common;
 using Zenject;
 
 namespace Scripts.DI
@@ -8,7 +7,8 @@ namespace Scripts.DI
     {
         public override void InstallBindings()
         {
-            Container.Bind<IInitiator>().To<Initiator>().AsSingle().NonLazy();
+            Container.Bind<IProcessTick>().To<TickProcessor>().AsSingle().NonLazy();
+            Container.BindInterfacesAndSelfTo<PauseProcessor>().AsSingle().NonLazy();
             Install();
         }
 

@@ -1,4 +1,4 @@
-using Scripts.CommonBehaviours;
+using Scripts.Common;
 
 namespace Scripts.UI
 {

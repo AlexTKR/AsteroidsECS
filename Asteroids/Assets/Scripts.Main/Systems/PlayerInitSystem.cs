@@ -2,6 +2,7 @@ using Leopotam.Ecs;
 using Scripts.Data;
 using Scripts.Main.Components;
 using Scripts.Main.Controllers;
+using Scripts.Main.Loader;
 using UnityEngine;
 
 namespace Scripts.Main.Systems

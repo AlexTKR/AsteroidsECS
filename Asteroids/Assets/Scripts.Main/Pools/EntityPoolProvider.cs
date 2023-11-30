@@ -1,5 +1,5 @@
 using Leopotam.Ecs;
-using Scripts.CommonBehaviours;
+using Scripts.Common;
 using Scripts.Main.Components;
 using Zenject;
 

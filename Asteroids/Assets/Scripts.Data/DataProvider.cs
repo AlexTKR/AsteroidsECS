@@ -16,7 +16,6 @@ namespace Scripts.Data
         
         public void Add<T>(IDataRepository<T> instance)
         {
-            instance.Init();
             _container[typeof(IDataRepository<T>)] = instance;
         }
 

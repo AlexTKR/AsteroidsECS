@@ -1,19 +1,14 @@
 using Leopotam.Ecs;
-using Scripts.CommonBehaviours;
 using Scripts.GlobalEvents;
 using Scripts.Main.Components;
 using Scripts.Main.Controllers;
-using Scripts.UI;
-using Scripts.UI.Panels;
 using Scripts.ViewModel;
 
 namespace Scripts.Main.Systems
 {
-    public class UiSystem : IEcsRunSystem, IEcsInitSystem
+    public class UiSystem : IEcsRunSystem, IEcsInitSystem //TODO refactor
     {
         private ViewModelProvider _viewModelProvider;
-        private IViewModel<GameOverPanel> _gameOverViewModel;
-        private ISceneLoader _sceneLoader;
         private EcsWorld _ecsWorld;
 
         private EcsFilter<PlayerComponent, MovableWithInertiaComponent,
@@ -23,7 +18,7 @@ namespace Scripts.Main.Systems
 
         public void Init()
         {
-            _gameOverViewModel = _viewModelProvider.Get<IViewModel<GameOverPanel>>();
+            //_gameOverViewModel = _viewModelProvider.Get<IViewModel<GameOverPanel>>();
             EventProcessor.Get<RestartGameEvent>().OnPublish += () =>
             {
                 _ecsWorld.NewEntity().Get<RestartGameComponent>() = new RestartGameComponent();
@@ -42,9 +37,6 @@ namespace Scripts.Main.Systems
 
         private void HandlePlayerMovementOutput()
         {
-            if (IPauseBehaviour.IsPaused)
-                return;
-
             ref var movableWithInertiaComponent = ref _playerFilter.Get2(0);
             ref var playerDataComponent = ref _playerFilter.Get3(0);
 
@@ -58,8 +50,7 @@ namespace Scripts.Main.Systems
 
             ref var playerDiedEntity = ref _playerDiedFilter.GetEntity(0);
             playerDiedEntity.Del<DiedComponent>();
-
-            _gameOverViewModel.SetActive(true);
+            //_gameOverViewModel.SetActive(true);
         }
     }
 }

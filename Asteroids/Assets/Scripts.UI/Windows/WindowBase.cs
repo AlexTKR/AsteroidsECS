@@ -1,9 +1,9 @@
-using Scripts.CommonBehaviours;
+using Scripts.Common;
 using UnityEngine;
 
-namespace Scripts.UI.Canvas
+namespace Scripts.UI.Windows
 {
-    public abstract class CanvasBase : MonoBehaviour
+    public abstract class WindowBase : MonoBehaviour
     {
         [SerializeField] private ViewModelConsumer[] _viewModelConsumers;
 

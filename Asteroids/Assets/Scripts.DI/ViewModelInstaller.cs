@@ -1,4 +1,3 @@
-using Scripts.CommonBehaviours;
 using Scripts.ViewModel;
 using Zenject;
 
@@ -10,7 +9,6 @@ namespace Scripts.DI
         {
             Container.BindInterfacesAndSelfTo(typeof(MainHudViewModel)).AsSingle().NonLazy();
             Container.BindInterfacesAndSelfTo(typeof(GameOverViewModel)).AsSingle().NonLazy();
-            
             Container.Bind<ViewModelProvider>().AsSingle().NonLazy();
         }
     }

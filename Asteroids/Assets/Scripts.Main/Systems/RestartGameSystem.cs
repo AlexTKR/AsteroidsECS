@@ -1,6 +1,6 @@
 using System;
 using Leopotam.Ecs;
-using Scripts.CommonBehaviours;
+using Scripts.Common;
 using Scripts.CommonExtensions;
 using Scripts.Main.Components;
 using Scripts.Main.Settings;
@@ -10,11 +10,9 @@ namespace Scripts.Main.Systems
 {
     public class RestartGameSystem : IEcsRunSystem
     {
+        private IPauseSystems _pauseSystems;
         private EcsFilter<RestartGameComponent> _restartGameFilter;
-
-        private EcsFilter<PlayerComponent, GameObjectComponent, TransformComponent, MovableWithInertiaComponent>
-            _playerFilter;
-
+        private EcsFilter<PlayerComponent, GameObjectComponent, TransformComponent, MovableWithInertiaComponent> _playerFilter;
         private EcsFilter<LaserComponent, GameObjectComponent> _laserFilter;
         private EcsFilter<DelayComponent> _delayFilter;
         private EcsFilter<MovableComponent, GameObjectComponent>.Exclude<RecyclingComponent> _movableFilter;
@@ -33,7 +31,8 @@ namespace Scripts.Main.Systems
             ResetPlayer();
             ResetDelays();
             ResetLaser();
-            IPauseBehaviour.IsPaused = false;
+            _pauseSystems.PauseRunSystems(false);
+            _pauseSystems.PausePhysicsRunSystems(false);
         }
 
         private void ResetLaser()

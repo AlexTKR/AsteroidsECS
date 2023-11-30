@@ -1,6 +1,5 @@
 using Leopotam.Ecs;
 using Scripts.Main.Components;
-using Scripts.Main.Composition;
 using Scripts.Main.Controllers;
 using Scripts.Main.Pools;
 using Scripts.Main.View;
@@ -27,7 +26,7 @@ namespace Scripts.DI
                 .To<SimpleEntityPool<EcsEntity, UfoComponent>>().AsSingle().NonLazy();
 
             Container.Bind<EntityPoolProvider>().AsSingle().NonLazy();
-            Container.InstantiateComponentOnNewGameObject<Root>();
+            Container.InstantiateComponentOnNewGameObject<Root.Root>();
         }
     }
 }

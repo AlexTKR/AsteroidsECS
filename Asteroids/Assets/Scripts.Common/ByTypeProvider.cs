@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Scripts.CommonBehaviours
+namespace Scripts.Common
 {
     public class ByTypeProvider 
     {

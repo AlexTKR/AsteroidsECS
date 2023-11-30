@@ -1,6 +1,6 @@
-using Scripts.CommonBehaviours;
+using Scripts.Common;
 using TMPro;
-using UnityEngine;
+
 
 namespace Scripts.UI.Panels
 {

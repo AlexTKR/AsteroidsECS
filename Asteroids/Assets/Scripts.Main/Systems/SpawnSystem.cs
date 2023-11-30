@@ -1,5 +1,4 @@
 using Leopotam.Ecs;
-using Scripts.CommonBehaviours;
 using Scripts.Main.Components;
 using Scripts.Main.Factories;
 
@@ -19,9 +18,6 @@ namespace Scripts.Main.Systems
 
         public void Run()
         {
-            if (IPauseBehaviour.IsPaused)
-                return;
-            
             if (_spawnFilter.IsEmpty())
                 return;
 

@@ -47,8 +47,9 @@ namespace Scripts.CommonExtensions
 
         public static void SetActiveOptimized(this GameObject gm, bool status)
         {
-            if (gm is null)
+            if (gm == null)
                 return;
+            
             var gameObject = gm.gameObject;
             if (gameObject.activeSelf != status)
                 gameObject.SetActive(status);

@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
-namespace Scripts.Main.Loadable
+namespace Scripts.Loadable
 {
     public interface ILoadable<T>
     {

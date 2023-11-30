@@ -1,10 +1,12 @@
 {
-    "name": "Scripts.UI",
+    "name": "Scripts.Root",
     "rootNamespace": "",
     "references": [
-        "GUID:64cda729e57899e4891f867c24848f59",
-        "GUID:6055be8ebefd69e48b49212b09b47b2f",
-        "GUID:e1ba1e1429879a8478db83ffd963861c",
+        "GUID:656c2c43d3cfe4855bd40e058874b0be",
+        "GUID:9c4b3a86bb5e795438c24db12dfe2c5d",
+        "GUID:b4dadc86367c8474e8f11820e611f592",
+        "GUID:380378689483a1045977ca1232262442",
+        "GUID:98239e98a90af654cbb627ef1f5c7368",
         "GUID:4856768ad70e7994d977dfa2d7343d6a",
         "GUID:36ad4fffecdb327458f405622e01a7a9"
     ],

@@ -1,7 +1,6 @@
 using Leopotam.Ecs;
-using Scripts.CommonBehaviours;
 using Scripts.Main.Components;
-using Scripts.Main.Controllers;
+using Scripts.Main.Loader;
 using Scripts.Main.Pools;
 using Scripts.Main.Settings;
 using UnityEngine;
@@ -27,9 +26,6 @@ namespace Scripts.Main.Systems
 
         public void Run()
         {
-            if (IPauseBehaviour.IsPaused)
-                return;
-            
             foreach (var i in _asteroidsFilter)
             {
                 ref var bigAsteroidEntity = ref _asteroidsFilter.GetEntity(i);

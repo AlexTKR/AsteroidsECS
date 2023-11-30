@@ -2,6 +2,7 @@ using Leopotam.Ecs;
 using Scripts.CommonExtensions;
 using Scripts.Main.Components;
 using Scripts.Main.Controllers;
+using Scripts.Main.Loader;
 using Scripts.Main.Pools;
 using UnityEngine;
 

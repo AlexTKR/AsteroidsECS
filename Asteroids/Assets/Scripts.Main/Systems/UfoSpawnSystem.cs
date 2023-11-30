@@ -1,8 +1,7 @@
 using System;
 using Leopotam.Ecs;
-using Scripts.CommonBehaviours;
 using Scripts.Main.Components;
-using Scripts.Main.Controllers;
+using Scripts.Main.Loader;
 using Scripts.Main.Pools;
 using Scripts.Main.Settings;
 using UnityEngine;
@@ -34,9 +33,6 @@ namespace Scripts.Main.Systems
 
         public void Run()
         {
-            if (IPauseBehaviour.IsPaused)
-                return;
-            
             if (!_setDelayFilter.IsEmpty())
             {
                 ref var setDelayEntity = ref _setDelayFilter.GetEntity(0);

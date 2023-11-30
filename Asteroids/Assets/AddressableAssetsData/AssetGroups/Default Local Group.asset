@@ -21,10 +21,6 @@ MonoBehaviour:
     m_Address: Asteriod_big
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 5fce8e3b27a150448a77f01fceafc82d
-    m_Address: Ufo
-    m_ReadOnly: 0
-    m_SerializedLabels: []
   - m_GUID: 9fe9bd8e46733444cb7941d135c24eaf
     m_Address: Player
     m_ReadOnly: 0

@@ -1,4 +1,4 @@
-using Scripts.CommonBehaviours;
+using Scripts.Common;
 using Scripts.UI;
 using Scripts.UI.Panels;
 using Zenject;

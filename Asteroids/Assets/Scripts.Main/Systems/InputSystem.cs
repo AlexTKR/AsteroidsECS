@@ -1,5 +1,4 @@
 using Leopotam.Ecs;
-using Scripts.CommonBehaviours;
 using Scripts.Main.Components;
 using UnityEngine;
 
@@ -26,9 +25,6 @@ namespace Scripts.Main.Systems
 
         public void Run()
         {
-            if (IPauseBehaviour.IsPaused)
-                return;
-            
             var movementInput = _inputActions.PlayerMap.Movement.ReadValue<Vector2>();
 
             ProcessPlayerMovementInput(ref movementInput);

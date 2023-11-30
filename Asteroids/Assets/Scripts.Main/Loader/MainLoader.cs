@@ -1,14 +1,11 @@
 using System;
+using Scripts.Loadable;
 using Scripts.Main.Entities;
-using Scripts.Main.Loadable;
 using Scripts.Main.Settings;
-using Scripts.UI.Canvas;
 using UnityEngine;
 
-namespace Scripts.Main.Controllers
+namespace Scripts.Main.Loader
 {
-    #region GameEntities
-
     public interface ILoadGameEntities : ILoadPlayer,ILoadBullet
         ,ILoadAsteroids, ILoadUfo
     {
@@ -36,32 +33,12 @@ namespace Scripts.Main.Controllers
         ILoadable<UfoMonoEntity> LoadUfo();
     }
 
-    #endregion
-
-    #region GameSettings
-
     public interface ILoadGameSettings
     {
         ILoadable<GameSettings> LoadGameSettings();
     }
-
-    #endregion
-
-    #region View
-
-    public interface ILoadView : ILoadCanvas<MainCanvas>
-    {
-        
-    }
-
-    public interface ILoadCanvas<T>
-    {
-        ILoadable<T> LoadCanvas(Type type);
-    }
-
-    #endregion
-
-    public class BundleController : ILoadGameEntities, ILoadGameSettings, ILoadView
+    
+    public class MainLoader : ILoadGameEntities, ILoadGameSettings
     {
         private ILoadable<PlayerMonoEntity> _playerMonoEntity;
         private ILoadable<BulletMonoEntity> _bulletMonoEntity;
@@ -69,7 +46,7 @@ namespace Scripts.Main.Controllers
         private ILoadable<SmallAsteroidMonoEntity> _smallAsteroidsMonoEntity;
         private ILoadable<UfoMonoEntity> _ufoMonoEntity;
         private ILoadable<GameSettings> _loadGameSettings;
-        private ILoadable<MainCanvas> _mainCanvas;
+      
 
         #region LoadableIds
         
@@ -79,8 +56,7 @@ namespace Scripts.Main.Controllers
         private const string BulletId = "Bullet";
         private const string UfoId = "Ufo";
         private const string GameSettingsId = "GameSettings";
-        private const string MainCanvasId = "MainCanvas";
-        
+
         #endregion
 
         public ILoadable<BigAsteroidMonoEntity> LoadBigAsteroid()
@@ -111,14 +87,6 @@ namespace Scripts.Main.Controllers
         public ILoadable<GameSettings> LoadGameSettings()
         {
             return _loadGameSettings ??= new LoadReference<GameSettings, GameSettings>(GameSettingsId);
-        }
-
-        public ILoadable<MainCanvas> LoadCanvas(Type type)
-        {
-            if (type == typeof(MainCanvas))
-                return _mainCanvas ??= new LoadReference<MainCanvas, GameObject>(MainCanvasId);
-
-            return default;
         }
     }
 }

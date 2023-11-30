@@ -1,6 +1,5 @@
 using System;
 using Leopotam.Ecs;
-using Scripts.CommonBehaviours;
 using Scripts.CommonExtensions;
 using Scripts.GlobalEvents;
 using Scripts.Main.Components;
@@ -26,9 +25,6 @@ namespace Scripts.Main.Systems
         
         public void Run()
         {
-            if (IPauseBehaviour.IsPaused)
-                return;
-
             if (_laserFilter.IsEmpty())
                 return;
 
