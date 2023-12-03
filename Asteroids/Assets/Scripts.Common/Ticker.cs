@@ -16,21 +16,14 @@ namespace Scripts.Common
         void RegisterPhysicsRunSystem(IEcsRunSystem runSystem);
     }
 
-    public class TickProcessor : IProcessTick , IPauseRunSystems, IPausePhysicsRunSystems
+    public class TickProcessor : IProcessTick 
     {
         private List<IEcsRunSystem> _runSystems = new List<IEcsRunSystem>();
         private List<IEcsRunSystem> _physicsRunSystems = new List<IEcsRunSystem>();
  
         private bool _runSystemsPaused;
         private bool _physicsRunSystemsPaused;
-
-        [Inject]
-        private void Construct(IPauseSystems pauseSystems)
-        {
-            pauseSystems.RegisterPauseSystem(this);
-            pauseSystems.RegisterPausePhysicsSystem(this);
-        }
-
+        
         public void Tick()
         {
             TickSystems();
@@ -51,21 +44,8 @@ namespace Scripts.Common
             _physicsRunSystems.Add(runSystem);
         }
 
-        void IPauseRunSystems.Pause(bool status)
-        {
-            _runSystemsPaused = status;
-        }
-
-        void IPausePhysicsRunSystems.Pause(bool status)
-        {
-            _physicsRunSystemsPaused = status;
-        }
-
         private void TickSystems()
         {
-            if (_runSystemsPaused)
-                return;
-
             for (int i = 0; i < _runSystems.Count; i++)
             {
                 _runSystems[i].Run();
@@ -74,9 +54,6 @@ namespace Scripts.Common
 
         private void TickPhysicsSystems()
         {
-            if (_physicsRunSystemsPaused)
-                return;
-            
             for (int i = 0; i < _physicsRunSystems.Count; i++)
             {
                 _physicsRunSystems[i].Run();

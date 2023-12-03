@@ -33,8 +33,8 @@ namespace Scripts.Main.Systems
             if (_playerFilter.IsEmpty())
                 return;
 
-            ref var playerComponent = ref _playerFilter.Get1(0);
-            var shootTransform = playerComponent.ShootTransform;
+            ref PlayerComponent playerComponent = ref _playerFilter.Get1(0);
+            Transform shootTransform = playerComponent.ShootTransform;
 
             foreach (var i in _bulletFilter)
             {
@@ -49,9 +49,9 @@ namespace Scripts.Main.Systems
                         !pooledEntity.Has<MovableComponent>())
                         continue;
 
-                    ref var transformComponent = ref pooledEntity.Get<TransformComponent>();
-                    ref var gameObjectComponent = ref pooledEntity.Get<GameObjectComponent>();
-                    ref var movableComponent = ref pooledEntity.Get<MovableComponent>();
+                    ref TransformComponent transformComponent = ref pooledEntity.Get<TransformComponent>();
+                    ref GameObjectComponent gameObjectComponent = ref pooledEntity.Get<GameObjectComponent>();
+                    ref MovableComponent movableComponent = ref pooledEntity.Get<MovableComponent>();
 
                     transformComponent.Transform.position = shootTransform.position;
                     transformComponent.Transform.rotation = shootTransform.rotation;

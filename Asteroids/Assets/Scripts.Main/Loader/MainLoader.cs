@@ -46,8 +46,7 @@ namespace Scripts.Main.Loader
         private ILoadable<SmallAsteroidMonoEntity> _smallAsteroidsMonoEntity;
         private ILoadable<UfoMonoEntity> _ufoMonoEntity;
         private ILoadable<GameSettings> _loadGameSettings;
-      
-
+        
         #region LoadableIds
         
         private const string AsteroidBigId = "Asteriod_big";

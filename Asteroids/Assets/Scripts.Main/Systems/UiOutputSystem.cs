@@ -1,32 +1,27 @@
 using Leopotam.Ecs;
+using Scripts.Common;
 using Scripts.GlobalEvents;
 using Scripts.Main.Components;
-using Scripts.Main.Controllers;
-using Scripts.ViewModel;
 
 namespace Scripts.Main.Systems
 {
-    public class UiSystem : IEcsRunSystem, IEcsInitSystem //TODO refactor
+    public class UiOutputSystem : PausableSystem, IEcsInitSystem 
     {
-        private ViewModelProvider _viewModelProvider;
         private EcsWorld _ecsWorld;
-
         private EcsFilter<PlayerComponent, MovableWithInertiaComponent,
             PlayerDataComponent> _playerFilter;
-
         private EcsFilter<PlayerComponent, DiedComponent> _playerDiedFilter;
 
         public void Init()
         {
-            //_gameOverViewModel = _viewModelProvider.Get<IViewModel<GameOverPanel>>();
-            EventProcessor.Get<RestartGameEvent>().OnPublish += () =>
+            EventProcessor.Get<RestartGameEvent>().OnPublish += restartGameEvent =>
             {
                 _ecsWorld.NewEntity().Get<RestartGameComponent>() = new RestartGameComponent();
                 EventProcessor.Get<RestartGameEvent>().UnPublish();
             };
         }
 
-        public void Run()
+        protected override void Tick()
         {
             if (_playerFilter.IsEmpty())
                 return;
@@ -47,10 +42,16 @@ namespace Scripts.Main.Systems
         {
             if (_playerDiedFilter.IsEmpty())
                 return;
-
+            
             ref var playerDiedEntity = ref _playerDiedFilter.GetEntity(0);
             playerDiedEntity.Del<DiedComponent>();
-            //_gameOverViewModel.SetActive(true);
+
+            ref SystemPausedComponent pausedComponent = ref _systemPausedFilter.Get1(0);
+            pausedComponent.SystemPauseActive = true;
+            
+            ActivateWindowEvent activateWindowEvent = EventProcessor.Get<ActivateWindowEvent>();
+            activateWindowEvent.WindowId = WindowId.GameOverWindow;
+            activateWindowEvent.Publish();
         }
     }
 }

@@ -1,3 +1,4 @@
+using Scripts.Common;
 using Scripts.Data;
 using Scripts.GlobalEvents;
 using Scripts.UI;
@@ -24,7 +25,9 @@ namespace Scripts.ViewModel
             panel.RestartButton.onClick.AddListener(() =>
             {
                 EventProcessor.Get<RestartGameEvent>().Publish();
-                panel.SetActive(false);
+                CloseWindowEvent closeWindowEvent = EventProcessor.Get<CloseWindowEvent>();
+                closeWindowEvent.WindowId = WindowId.GameOverWindow;
+                closeWindowEvent.Publish();
             });
         }
     }

@@ -4,17 +4,17 @@ using UnityEngine;
 
 namespace Scripts.Main.Systems
 {
-    public class MovementWithInertiaSystem : IEcsRunSystem
+    public class MovementWithInertiaSystem : PausableSystem
     {
         private EcsFilter<TransformComponent, MovableWithInertiaComponent> _movableFilter;
 
-        public void Run()
+        protected override void Tick()
         {
             foreach (var i in _movableFilter)
             {
                 ref var movableEntity = ref _movableFilter.GetEntity(i);
-                ref var movableWithInertiaComponent = ref _movableFilter.Get2(i);
-                ref var transformComponent = ref _movableFilter.Get1(i);
+                ref MovableWithInertiaComponent movableWithInertiaComponent = ref _movableFilter.Get2(i);
+                ref TransformComponent transformComponent = ref _movableFilter.Get1(i);
 
                 if (movableEntity.Has<AccelerationComponent>())
                 {

@@ -4,18 +4,18 @@ using UnityEngine;
 
 namespace Scripts.Main.Systems
 {
-    public class MovementSystem : IEcsRunSystem
+    public class MovementSystem : PausableSystem
     {
         private EcsFilter<MovableComponent, TransformComponent, GameObjectComponent> _movableFilter;
 
-        public void Run()
+        protected override void Tick()
         {
             foreach (var i in _movableFilter)
             {
                 ref var entity = ref _movableFilter.GetEntity(i);
-                ref var movableComponent = ref _movableFilter.Get1(i);
-                ref var transformComponent = ref _movableFilter.Get2(i);
-                ref var gameObjectComponent = ref _movableFilter.Get3(i);
+                ref MovableComponent movableComponent = ref _movableFilter.Get1(i);
+                ref TransformComponent transformComponent = ref _movableFilter.Get2(i);
+                ref GameObjectComponent gameObjectComponent = ref _movableFilter.Get3(i);
 
                 if (!gameObjectComponent.GameObject.activeSelf)
                     continue;

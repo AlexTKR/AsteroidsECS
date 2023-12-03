@@ -4,18 +4,18 @@ using UnityEngine;
 
 namespace Scripts.Main.Systems
 {
-    public class RotationSystem : IEcsRunSystem
+    public class RotationSystem : PausableSystem
     {
         private EcsFilter<TransformComponent, RotationComponent, RotationSpeedComponent> _rotationFilter;
         
-        public  void Run()
+        protected override void Tick()
         {
             foreach (var i in _rotationFilter)
             {
                 ref var rotationEntity = ref _rotationFilter.GetEntity(i);
-                ref var transformComponent = ref _rotationFilter.Get1(i);
-                ref var rotationComponent = ref _rotationFilter.Get2(i);
-                ref var rotationSpeedComponent = ref _rotationFilter.Get3(i);
+                ref TransformComponent transformComponent = ref _rotationFilter.Get1(i);
+                ref RotationComponent rotationComponent = ref _rotationFilter.Get2(i);
+                ref RotationSpeedComponent rotationSpeedComponent = ref _rotationFilter.Get3(i);
 
                 var playerTransform = transformComponent.Transform;
                 playerTransform.Rotate(playerTransform.forward * rotationComponent.Rotation * rotationSpeedComponent.RotationSpeed * Time.deltaTime);// Set op player 

@@ -1,4 +1,5 @@
 using Scripts.Common;
+using Scripts.WindowProcessor;
 using Zenject;
 
 namespace Scripts.DI
@@ -8,7 +9,7 @@ namespace Scripts.DI
         public override void InstallBindings()
         {
             Container.Bind<IProcessTick>().To<TickProcessor>().AsSingle().NonLazy();
-            Container.BindInterfacesAndSelfTo<PauseProcessor>().AsSingle().NonLazy();
+            Container.Bind<IProcessWindows>().To<WindowProcessor.WindowProcessor>().AsSingle().NonLazy();
             Install();
         }
 

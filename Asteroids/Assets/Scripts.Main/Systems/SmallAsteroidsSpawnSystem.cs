@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Scripts.Main.Systems
 {
-    public class SmallAsteroidsSpawnSystem : IEcsRunSystem, IEcsInitSystem
+    public class SmallAsteroidsSpawnSystem : PausableSystem, IEcsInitSystem
     {
         private EcsWorld _ecsWorld;
         private EcsFilter<BigAsteroidComponent, DamageComponent, TransformComponent, MovableComponent> _asteroidsFilter;
@@ -24,13 +24,13 @@ namespace Scripts.Main.Systems
             _smallAsteroidMonoEntityPrefab = _loadAsteroids.LoadSmallAsteroid().Load(runAsync: false).Result.gameObject;
         }
 
-        public void Run()
+        protected override void Tick()
         {
             foreach (var i in _asteroidsFilter)
             {
                 ref var bigAsteroidEntity = ref _asteroidsFilter.GetEntity(i);
-                ref var bigAsteroidTransformComponent = ref _asteroidsFilter.Get3(i);
-                ref var movableComponent = ref _asteroidsFilter.Get4(i);
+                ref TransformComponent bigAsteroidTransformComponent = ref _asteroidsFilter.Get3(i);
+                ref MovableComponent movableComponent = ref _asteroidsFilter.Get4(i);
                 var moveDirection = movableComponent.Direction;
                 var bigAsteroidTransform = bigAsteroidTransformComponent.Transform;
                 bigAsteroidEntity.Del<DamageComponent>();
@@ -42,8 +42,8 @@ namespace Scripts.Main.Systems
                     if (_smallAsteroidsEntityPool.EntityCount > 0)
                     {
                         ref var pooledEntity = ref _smallAsteroidsEntityPool.Get();
-                        ref var smallAsteroidTransformComponent = ref pooledEntity.Get<TransformComponent>();
-                        ref var smallAsteroidMovableComponent = ref pooledEntity.Get<MovableComponent>();
+                        ref TransformComponent smallAsteroidTransformComponent = ref pooledEntity.Get<TransformComponent>();
+                        ref MovableComponent smallAsteroidMovableComponent = ref pooledEntity.Get<MovableComponent>();
                         smallAsteroidMovableComponent.Direction = moveDirection;
                         var smallAsteroidTransform = smallAsteroidTransformComponent.Transform;
                         smallAsteroidTransform.position = bigAsteroidTransform.position;

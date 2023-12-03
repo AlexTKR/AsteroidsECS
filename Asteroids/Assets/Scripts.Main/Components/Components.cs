@@ -4,6 +4,11 @@ using UnityEngine;
 
 namespace Scripts.Main.Components
 {
+    public struct SystemPausedComponent
+    {
+        public bool SystemPauseActive;
+    }
+
     public struct SpawnComponent
     {
         public GameObject Prefab;

@@ -16,7 +16,7 @@ namespace Scripts.Main.Systems
         RightSide
     }
 
-    public class EntityScreenPlacementSystem : IEcsRunSystem
+    public class EntityScreenPlacementSystem : PausableSystem
     {
         private EcsFilter<EntityScreenPlacementComponent, TransformComponent,
             GameObjectComponent, MovableComponent, SpriteRendererComponent> _placementFilter;
@@ -24,18 +24,18 @@ namespace Scripts.Main.Systems
         private IScreenBoundsProvider _screenBoundsProvider;
 
 
-        public void Run()
+        protected override void Tick()
         {
-            ref var screenBounds = ref _screenBoundsProvider.ScreenBounds;
+            ref Vector2 screenBounds = ref _screenBoundsProvider.ScreenBounds;
 
             foreach (var i in _placementFilter)
             {
                 ref var placementEntity = ref _placementFilter.GetEntity(i);
 
                 ref var transformComponent = ref _placementFilter.Get2(i);
-                ref var gameObjectComponent = ref _placementFilter.Get3(i);
-                ref var movableComponent = ref _placementFilter.Get4(i);
-                ref var spriteRendererComponent = ref _placementFilter.Get5(i);
+                ref GameObjectComponent gameObjectComponent = ref _placementFilter.Get3(i);
+                ref MovableComponent movableComponent = ref _placementFilter.Get4(i);
+                ref SpriteRendererComponent spriteRendererComponent = ref _placementFilter.Get5(i);
 
                 placementEntity.Del<EntityScreenPlacementComponent>();
 
@@ -51,10 +51,7 @@ namespace Scripts.Main.Systems
                 {
                     PlaceInsideAndGetRandomDirection(ref transformComponent, ref gameObjectComponent,
                         ref movableComponent);
-                    continue;
                 }
-                
-                
             }
         }
 
@@ -62,13 +59,13 @@ namespace Scripts.Main.Systems
         private void PlaceInsideAndGetRandomDirection(ref TransformComponent transformComponent,
             ref GameObjectComponent gameObjectComponent, ref MovableComponent movableComponent)
         {
-            var direction = movableComponent.Direction;
+            Vector3 direction = movableComponent.Direction;
 
-            var myRotation = Quaternion.Euler(direction.x, direction.y,
+            Quaternion myRotation = Quaternion.Euler(direction.x, direction.y,
                 direction.z + UnityEngine.Random.Range(
                     RuntimeSharedData.GameSettings.SmallAsteroidsSpawnCountDegrees.x,
                     RuntimeSharedData.GameSettings.SmallAsteroidsSpawnCountDegrees.y));
-            var resDirection = myRotation * direction;
+            Vector3 resDirection = myRotation * direction;
 
             movableComponent.Direction = new Vector3(resDirection.x, resDirection.y, 0f);
             gameObjectComponent.GameObject.SetActiveOptimized(true);

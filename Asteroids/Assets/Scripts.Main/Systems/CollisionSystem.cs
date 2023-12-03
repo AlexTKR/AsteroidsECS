@@ -2,6 +2,7 @@ using Leopotam.Ecs;
 using Scripts.CommonExtensions;
 using Scripts.Main.Components;
 using Scripts.Main.Converters;
+using UnityEngine;
 
 namespace Scripts.Main.Systems
 {
@@ -19,8 +20,8 @@ namespace Scripts.Main.Systems
             foreach (var i in _triggerFilter)
             {
                 ref var triggerEntity = ref _triggerFilter.GetEntity(i);
-                ref var triggerComponent = ref _triggerFilter.Get1(i);
-                var other = triggerComponent.Collider;
+                ref TriggerComponent triggerComponent = ref _triggerFilter.Get1(i);
+                Collider other = triggerComponent.Collider;
                 var physicsAffectedEntityToMono =
                     other.GetComponent<PhysicsAffectedEntityToMono>();
                 ref var otherEntity = ref physicsAffectedEntityToMono.Entity;
@@ -36,7 +37,7 @@ namespace Scripts.Main.Systems
                     continue;
                 }
 
-                ref var gameObjectComponent = ref _triggerFilter.Get2(i);
+                ref GameObjectComponent gameObjectComponent = ref _triggerFilter.Get2(i);
                 gameObjectComponent.GameObject.SetActiveOptimized(false);
 
                 if (triggerEntity.Has<BigAsteroidComponent>())

@@ -4,17 +4,17 @@ using Scripts.Main.Components;
 
 namespace Scripts.Main.Systems
 {
-    public class PlayerDamageSystem : IEcsRunSystem
+    public class PlayerDamageSystem : PausableSystem
     {
         EcsFilter<PlayerComponent, DamageComponent, GameObjectComponent> _playerDamageFilter;
 
-        public void Run()
+        protected override void Tick()
         {
             if (_playerDamageFilter.IsEmpty())
                 return;
 
             ref var playerEntity = ref _playerDamageFilter.GetEntity(0);
-            ref var gameObjectComponent = ref _playerDamageFilter.Get3(0);
+            ref GameObjectComponent gameObjectComponent = ref _playerDamageFilter.Get3(0);
 
             if (!gameObjectComponent.GameObject.activeSelf)
                 return;

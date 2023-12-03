@@ -7,7 +7,7 @@ using Scripts.Main.Settings;
 
 namespace Scripts.Main.Systems
 {
-    public class LaserSystem : IEcsRunSystem, IEcsInitSystem
+    public class LaserSystem : PausableSystem, IEcsInitSystem
     {
         private EcsFilter<LaserComponent, GameObjectComponent> _laserFilter;
         private EcsFilter<PlayerDataComponent> _playerDataFilter;
@@ -17,22 +17,21 @@ namespace Scripts.Main.Systems
 
         public void Init()
         {
-            EventProcessor.Get<RestartGameEvent>().OnPublish += () =>
+            EventProcessor.Get<RestartGameEvent>().OnPublish += restartGameEvent =>
             {
                 _dataIsSet = false;
             };
         }
         
-        public void Run()
+        protected override void Tick()
         {
             if (_laserFilter.IsEmpty())
                 return;
-
-
+            
             ref var laserEntity = ref _laserFilter.GetEntity(0);
-            ref var laserComponent = ref _laserFilter.Get1(0);
-            ref var gameObjectComponent = ref _laserFilter.Get2(0);
-            ref var playerDataComponent = ref _playerDataFilter.Get1(0);
+            ref LaserComponent laserComponent = ref _laserFilter.Get1(0);
+            ref GameObjectComponent gameObjectComponent = ref _laserFilter.Get2(0);
+            ref PlayerDataComponent playerDataComponent = ref _playerDataFilter.Get1(0);
 
             if (!_dataIsSet)
             {
@@ -73,11 +72,13 @@ namespace Scripts.Main.Systems
             laserEntity.Del<ShootLaserComponent>();
 
             if (--laserComponent.LaserCount <= 0)
+            {
                 laserEntity.Get<DelayComponent>() = new DelayComponent()
                 {
                     DelayTimer = DateTime.Now.TimeOfDay +
                                  TimeSpan.FromSeconds(RuntimeSharedData.GameSettings.LaserDelay)
                 };
+            }
 
             playerDataComponent.PlayerData.LaserCount.Value = laserComponent.LaserCount;
 

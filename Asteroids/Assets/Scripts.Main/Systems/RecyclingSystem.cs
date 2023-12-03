@@ -5,7 +5,7 @@ using Scripts.Main.Pools;
 
 namespace Scripts.Main.Systems
 {
-    public class RecyclingSystem : IEcsRunSystem, IEcsInitSystem
+    public class RecyclingSystem : PausableSystem, IEcsInitSystem
     {
         private EcsFilter<RecyclingComponent, GameObjectComponent> _recyclingFilter;
         private EntityPoolProvider _poolProvider;
@@ -22,12 +22,12 @@ namespace Scripts.Main.Systems
             _ufoEntityPool = _poolProvider.Get<IEntityPool<EcsEntity, UfoComponent>>();
         }
         
-        public void Run()
+        protected override void Tick()
         {
             foreach (var i in _recyclingFilter)
             {
                 ref var recyclingEntity = ref _recyclingFilter.GetEntity(i);
-                ref var gameObjectComponent = ref _recyclingFilter.Get2(i);
+                ref GameObjectComponent gameObjectComponent = ref _recyclingFilter.Get2(i);
                 gameObjectComponent.GameObject.SetActiveOptimized(false);
 
                 if (recyclingEntity.Has<BulletComponent>())

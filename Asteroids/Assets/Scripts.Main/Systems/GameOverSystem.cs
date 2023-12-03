@@ -4,22 +4,19 @@ using Scripts.Main.Components;
 
 namespace Scripts.Main.Systems
 {
-    public class GameOverSystem : IEcsRunSystem
+    public class GameOverSystem : PausableSystem
     {
-        private IPauseSystems _pauseSystems;
         private EcsFilter<PlayerComponent, DiedComponent, PlayerDataComponent> _playerDiedFilter;
         private EcsFilter<GameScoreComponent> _scoreFilter;
 
-        public void Run()
+        protected override void Tick()
         {
             if (_playerDiedFilter.IsEmpty()) 
                 return;
 
-            ref var playerDataComponent = ref _playerDiedFilter.Get3(0);
-            ref var scoreComponent = ref _scoreFilter.Get1(0);
+            ref PlayerDataComponent playerDataComponent = ref _playerDiedFilter.Get3(0);
+            ref GameScoreComponent scoreComponent = ref _scoreFilter.Get1(0);
             playerDataComponent.PlayerData.Score.Value = scoreComponent.Score;
-            _pauseSystems.PauseRunSystems(true);
-            _pauseSystems.PausePhysicsRunSystems(true);
         }
     }
 }

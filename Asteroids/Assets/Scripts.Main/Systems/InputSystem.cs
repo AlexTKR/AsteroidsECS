@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Scripts.Main.Systems
 {
-    public class InputSystem : IEcsInitSystem, IEcsRunSystem
+    public class InputSystem : PausableSystem, IEcsInitSystem
     {
         private EcsFilter<PlayerComponent, MovableWithInertiaComponent> _playerFilter;
         private EcsFilter<LaserComponent> _laserFilter;
@@ -23,10 +23,9 @@ namespace Scripts.Main.Systems
             _inputActions.PlayerMap.ShootingLaser.performed += context => { _shootLaserButtonPressed = true; };
         }
 
-        public void Run()
+        protected override void Tick()
         {
             var movementInput = _inputActions.PlayerMap.Movement.ReadValue<Vector2>();
-
             ProcessPlayerMovementInput(ref movementInput);
 
 
@@ -51,7 +50,7 @@ namespace Scripts.Main.Systems
                 return;
             
             ref var playerEntity = ref _playerFilter.GetEntity(0);
-            ref var movableWithInertiaComponent = ref _playerFilter.Get2(0);
+            ref MovableWithInertiaComponent movableWithInertiaComponent = ref _playerFilter.Get2(0);
 
             if (movementInput.y >= 1f)
             {

@@ -1,5 +1,6 @@
 using System;
 using Scripts.Reactive;
+using UnityEngine;
 
 namespace Scripts.UI
 {
@@ -20,14 +21,25 @@ namespace Scripts.UI
         }
     }
 
-    public class UIPanel : UIElement
+    public abstract class UIPanel : MonoBehaviour
     {
         public Action OnDestroyAction;
+        public Action OnRenderAction;
+
+        protected virtual void OnEnable()
+        {
+            Render();
+        }
 
         protected virtual void OnDestroy()
         {
             OnDestroyAction?.Invoke();
             OnDestroyAction = null;
+        }
+
+        public virtual void Render()
+        {
+            OnRenderAction?.Invoke();
         }
     }
 }

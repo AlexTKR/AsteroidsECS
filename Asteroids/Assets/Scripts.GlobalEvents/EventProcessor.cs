@@ -5,15 +5,15 @@ namespace Scripts.GlobalEvents
 {
     public static class EventProcessor
     {
-        private static Dictionary<Type, EventBase> _container =
-            new Dictionary<Type, EventBase>();
+        private static Dictionary<Type, object> _container =
+            new Dictionary<Type, object>();
 
-        public static EventBase Get<T>() where T : EventBase
+        public static T Get<T>() 
         {
             var eventType = typeof(T);
 
             if (_container.TryGetValue(eventType, out var value))
-                return value;
+                return (T)value;
 
             var newEvent = Activator.CreateInstance<T>();
             _container[eventType] = newEvent;

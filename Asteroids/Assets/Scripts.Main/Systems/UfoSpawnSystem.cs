@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Scripts.Main.Systems
 {
-    public class UfoSpawnSystem : IEcsInitSystem, IEcsRunSystem
+    public class UfoSpawnSystem : PausableSystem ,IEcsInitSystem
     {
         private EcsWorld _ecsWorld;
         private EcsFilter<UfoSystemComponent> _ufoSystemFilter;
@@ -31,7 +31,7 @@ namespace Scripts.Main.Systems
             _ufoMonoEntityPrefab = _loadUfo.LoadUfo().Load(runAsync: false).Result.gameObject;
         }
 
-        public void Run()
+        protected override void Tick()
         {
             if (!_setDelayFilter.IsEmpty())
             {
@@ -55,7 +55,7 @@ namespace Scripts.Main.Systems
             {
                 ref var delayEntity = ref _delayFilter.GetEntity(0);
 
-                ref var spawnDelayComponent = ref _delayFilter.Get2(0);
+                ref DelayComponent spawnDelayComponent = ref _delayFilter.Get2(0);
                 if (DateTime.Now.TimeOfDay >= spawnDelayComponent.DelayTimer)
                 {
                     delayEntity.Del<DelayComponent>();

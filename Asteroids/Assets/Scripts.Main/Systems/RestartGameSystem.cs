@@ -1,6 +1,5 @@
 using System;
 using Leopotam.Ecs;
-using Scripts.Common;
 using Scripts.CommonExtensions;
 using Scripts.Main.Components;
 using Scripts.Main.Settings;
@@ -10,7 +9,7 @@ namespace Scripts.Main.Systems
 {
     public class RestartGameSystem : IEcsRunSystem
     {
-        private IPauseSystems _pauseSystems;
+        EcsFilter<SystemPausedComponent> _systemPausedFilter;
         private EcsFilter<RestartGameComponent> _restartGameFilter;
         private EcsFilter<PlayerComponent, GameObjectComponent, TransformComponent, MovableWithInertiaComponent> _playerFilter;
         private EcsFilter<LaserComponent, GameObjectComponent> _laserFilter;
@@ -31,16 +30,17 @@ namespace Scripts.Main.Systems
             ResetPlayer();
             ResetDelays();
             ResetLaser();
-            _pauseSystems.PauseRunSystems(false);
-            _pauseSystems.PausePhysicsRunSystems(false);
+            
+            ref SystemPausedComponent pausedComponent = ref _systemPausedFilter.Get1(0);
+            pausedComponent.SystemPauseActive = false;
         }
 
         private void ResetLaser()
         {
             ref var laserEntity = ref _laserFilter.GetEntity(0);
             laserEntity.Del<LaserActiveComponent>();
-            ref var laserComponent = ref _laserFilter.Get1(0);
-            ref var gameObjectComponent = ref _laserFilter.Get2(0);
+            ref LaserComponent laserComponent = ref _laserFilter.Get1(0);
+            ref GameObjectComponent gameObjectComponent = ref _laserFilter.Get2(0);
             laserComponent.LaserCount = RuntimeSharedData.GameSettings.LaserCount;
             gameObjectComponent.GameObject.SetActiveOptimized(false);
         }
@@ -65,9 +65,9 @@ namespace Scripts.Main.Systems
 
         private void ResetPlayer()
         {
-            ref var playerGameObjectComponent = ref _playerFilter.Get2(0);
-            ref var transformComponent = ref _playerFilter.Get3(0);
-            ref var movableWithInertiaComponent = ref _playerFilter.Get4(0);
+            ref GameObjectComponent playerGameObjectComponent = ref _playerFilter.Get2(0);
+            ref TransformComponent transformComponent = ref _playerFilter.Get3(0);
+            ref MovableWithInertiaComponent movableWithInertiaComponent = ref _playerFilter.Get4(0);
 
             transformComponent.Transform.position = Vector3.zero;
             transformComponent.Transform.rotation = Quaternion.Euler(Vector3.zero);
@@ -78,7 +78,7 @@ namespace Scripts.Main.Systems
 
         private void ResetGameScore()
         {
-            ref var gameScoreComponent = ref _gameScoreFilter.Get1(0);
+            ref GameScoreComponent gameScoreComponent = ref _gameScoreFilter.Get1(0);
             gameScoreComponent.Score = 0;
         }
 

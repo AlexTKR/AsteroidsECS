@@ -1,3 +1,16 @@
 {
-	"name": "Scripts.GlobalEvents"
+    "name": "Scripts.GlobalEvents",
+    "rootNamespace": "",
+    "references": [
+        "GUID:4856768ad70e7994d977dfa2d7343d6a"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

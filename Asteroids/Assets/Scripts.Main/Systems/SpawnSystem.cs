@@ -24,7 +24,7 @@ namespace Scripts.Main.Systems
             foreach (var i in _spawnFilter)
             {
                 ref var entity = ref _spawnFilter.GetEntity(i);
-                ref var spawnComponent = ref _spawnFilter.Get1(i);
+                ref SpawnComponent spawnComponent = ref _spawnFilter.Get1(i);
                 _factory.Get(ref entity, ref spawnComponent);
                 entity.Del<SpawnComponent>();
             }
