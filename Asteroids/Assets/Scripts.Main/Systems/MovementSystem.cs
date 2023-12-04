@@ -24,7 +24,7 @@ namespace Scripts.Main.Systems
                 if (entity.Has<FollowTargetComponent>())
                 {
                     ref var followTargetComponent = ref entity.Get<FollowTargetComponent>();
-                    direction = followTargetComponent.Target.position - transformComponent.Transform.position;
+                    direction = (followTargetComponent.Target.position - transformComponent.Transform.position ).normalized;
                 }
                 else
                 {

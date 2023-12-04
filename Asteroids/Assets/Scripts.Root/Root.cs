@@ -24,7 +24,6 @@ namespace Scripts.Root
         private IDataProvider _dataProvider;
         private EntityPoolProvider _entityPoolProvider;
 
-
         [Inject]
         private void Construct(IProcessTick processTick, IScreenBoundsProvider screenBoundsProvider, 
             IDataProvider dataProvider, ILoadGameEntities loadGameEntities, EntityPoolProvider entityPoolProvider)

@@ -17,5 +17,5 @@ MonoBehaviour:
   LaserCount: 4
   LaserDelay: 20
   LaserActiveTime: 1
-  AsteroidsSpawnDelay: 1.5
+  AsteroidsSpawnDelay: 2.5
   UfoSpawnDelay: 4

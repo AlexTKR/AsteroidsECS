@@ -1,24 +1,22 @@
+using Cysharp.Threading.Tasks;
 using UnityEngine.SceneManagement;
 
 namespace Scripts.Main.Controllers
 {
     public interface ISceneLoader
     {
-        void LoadScene(int sceneId);
+        UniTask LoadScene(int sceneId);
     }
 
     public class SceneLoaderController : ControllersBase , ISceneLoader
     {
-        public void LoadScene(int targetIndex)
+        public async UniTask LoadScene(int targetIndex)
         {
             var currentScene = SceneManager.GetActiveScene().buildIndex;
-            var loadSceneAsync = SceneManager.LoadSceneAsync(targetIndex, LoadSceneMode.Additive);
+            await SceneManager.LoadSceneAsync(targetIndex, LoadSceneMode.Additive);
 
-            loadSceneAsync.completed += loadOperation =>
-            {
-                SceneManager.SetActiveScene(SceneManager.GetSceneByBuildIndex(targetIndex));
-                SceneManager.UnloadSceneAsync(currentScene);
-            };
+            SceneManager.SetActiveScene(SceneManager.GetSceneByBuildIndex(targetIndex));
+            await SceneManager.UnloadSceneAsync(currentScene);
         }
         
     }
