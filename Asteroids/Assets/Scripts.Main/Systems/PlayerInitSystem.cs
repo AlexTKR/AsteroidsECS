@@ -1,3 +1,4 @@
+using System;
 using Leopotam.Ecs;
 using Scripts.Data;
 using Scripts.Main.Components;
@@ -25,14 +26,22 @@ namespace Scripts.Main.Systems
                 PlayerData = playerDataRepository.Data
             };
             
-            playerSpawnEntity.Get<SpawnComponent>() = new SpawnComponent()
+            var spawnComponent = new SpawnComponent()
             {
                 Prefab = playerPrefab.gameObject,
                 Position = Vector3.zero,
                 Rotation = Quaternion.identity,
                 Parent = null,
-                IsActive = true
+                IsActive = true,
+                OnSpawn = () => { _loadPlayer.LoadPLayer().Release(); }
             };
+            
+            playerSpawnEntity.Get<SpawnComponent>() = spawnComponent;
+        }
+
+        private void OnPlayerSpawned(Action action)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

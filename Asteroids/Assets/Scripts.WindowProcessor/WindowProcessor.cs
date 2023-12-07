@@ -106,7 +106,7 @@ namespace Scripts.WindowProcessor
         private async UniTask<WindowBase> CreateWindow(WindowId windowId)
         {
             ILoadable<WindowBase> loadable = _loadUI.LoadWindow(windowId);
-            Task<WindowBase> loadTask = loadable.Load(autoRelease: false);
+            Task<WindowBase> loadTask = loadable.Load();
             await loadTask;
             WindowBase window = MonoBehaviour.Instantiate(loadTask.Result);
             window.InitiateViewModels(_viewModelProvider);

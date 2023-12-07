@@ -16,6 +16,7 @@ namespace Scripts.Main.Components
         public Quaternion Rotation;
         public Transform Parent;
         public bool IsActive;
+        public Action OnSpawn;
     }
 
     public struct SpriteRendererComponent

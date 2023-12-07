@@ -26,6 +26,7 @@ namespace Scripts.Main.Systems
                 ref var entity = ref _spawnFilter.GetEntity(i);
                 ref SpawnComponent spawnComponent = ref _spawnFilter.Get1(i);
                 _factory.Get(ref entity, ref spawnComponent);
+                spawnComponent.OnSpawn?.Invoke();
                 entity.Del<SpawnComponent>();
             }
         }

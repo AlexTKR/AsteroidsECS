@@ -7,7 +7,7 @@ namespace Scripts.Loadable
 {
     public interface ILoadable<T>
     {
-        Task<T> Load(bool autoRelease = true, bool runAsync = true);
+        Task<T> Load(bool runAsync = true);
         void Release();
     }
 
@@ -21,8 +21,11 @@ namespace Scripts.Loadable
             _id = id;
         }
 
-        public async Task<T1> Load(bool autoRelease = true, bool runAsync = true)
+        public async Task<T1> Load(bool runAsync = true)
         {
+            if (_handle.IsValid() && _handle.IsDone)
+                return CastResultToTargetType();
+            
             _handle = Addressables.LoadAssetAsync<T2>(_id);
 
             if (runAsync)
@@ -30,13 +33,16 @@ namespace Scripts.Loadable
             else
                 _handle.WaitForCompletion();
 
+            var result = CastResultToTargetType();
+
+            return result;
+        }
+
+        private T1 CastResultToTargetType()
+        {
             var result = typeof(T2) == typeof(GameObject)
                 ? ((GameObject)_handle.Result).GetComponent<T1>()
                 : (T1)_handle.Result;
-
-            if (autoRelease)
-                Release();
-
             return result;
         }
 

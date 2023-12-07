@@ -1,4 +1,3 @@
-using System;
 using Scripts.Loadable;
 using Scripts.Main.Entities;
 using Scripts.Main.Settings;
